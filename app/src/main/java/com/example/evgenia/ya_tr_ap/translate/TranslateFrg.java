@@ -3,6 +3,7 @@ package com.example.evgenia.ya_tr_ap.translate;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
+import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
  * Created by Evgenia on 02.04.2017.
@@ -17,6 +19,7 @@ import com.example.evgenia.ya_tr_ap.R;
 
 public class TranslateFrg extends Fragment{
     public final static String TAG = "TranslateFrg";
+    private TabLayout tabLayout;
 
 
     @Override
@@ -35,8 +38,42 @@ public class TranslateFrg extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        return inflater.inflate(R.layout.fragment_traslate, container, false);
+        View view = inflater.inflate(R.layout.fragment_traslate, container, false);
 
+        if(savedInstanceState != null) {
+            initTablayout(view, savedInstanceState.getInt(Utils.TRANSLATE_SELECTED_TAB, 0));
+        }
+        else initTablayout(view, 0);
+
+        return view;
+
+    }
+
+    private void initTablayout(View view, int selectedPos){
+        tabLayout = (TabLayout) view.findViewById(R.id.tablayout_language);
+        tabLayout.getTabAt(selectedPos).select();
+//        TabLayout.Tab tab1 = tabLayout.newTab().setText("lang1").setTag("t1");
+//        TabLayout.Tab tab2 = tabLayout.newTab().setIcon(getResources().getDrawable(R.mipmap.ic_launcher)).setTag("t2");
+//        TabLayout.Tab tab3 = tabLayout.newTab().setText("lang2").setTag("t3");
+//        tabLayout.addTab(tab1);
+//        tabLayout.addTab(tab2);
+//        tabLayout.addTab(tab3);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabSelected: " + tab.getText() + " " + tabLayout.getSelectedTabPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabUnselected: " + tab.getText());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabReselected: " + tab.getText());
+            }
+        });
     }
 
     @Override
@@ -84,6 +121,8 @@ public class TranslateFrg extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
+        outState.putInt(Utils.TRANSLATE_SELECTED_TAB, tabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
+
     }
 }
