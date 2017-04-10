@@ -16,6 +16,8 @@
         android:layout_weight="1">
     </com.example.evgenia.ya_tr_ap.CustomViewPager>
 
+
+    <!--таб - переключение между фрагментами перевод, истояри/закладки, настройки-->
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
+import com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs.SelectLangDialog;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
@@ -40,28 +41,29 @@ public class TranslateFrg extends Fragment{
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_traslate, container, false);
 
-        if(savedInstanceState != null) {
-            initTablayout(view, savedInstanceState.getInt(Utils.TRANSLATE_SELECTED_TAB, 0));
-        }
-        else initTablayout(view, 0);
+        initTablayout(view);
 
         return view;
 
     }
 
-    private void initTablayout(View view, int selectedPos){
+
+    /**
+     * сетитть табы из разметки или из кода?
+     * пока из разметки - меньше кода, лучше читается*/
+    private void initTablayout(View view){
         tabLayout = (TabLayout) view.findViewById(R.id.tablayout_language);
-        tabLayout.getTabAt(selectedPos).select();
-//        TabLayout.Tab tab1 = tabLayout.newTab().setText("lang1").setTag("t1");
-//        TabLayout.Tab tab2 = tabLayout.newTab().setIcon(getResources().getDrawable(R.mipmap.ic_launcher)).setTag("t2");
-//        TabLayout.Tab tab3 = tabLayout.newTab().setText("lang2").setTag("t3");
-//        tabLayout.addTab(tab1);
-//        tabLayout.addTab(tab2);
-//        tabLayout.addTab(tab3);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Log.d(TAG, "onTabSelected: " + tab.getText() + " " + tabLayout.getSelectedTabPosition());
+                Log.d(TAG, "onTabSelected: ");
+                if (tabLayout.getSelectedTabPosition() == 0){
+                    SelectLangDialog dialog = SelectLangDialog.newInstance("языка текста", SelectLangDialog.TEXT_LANGUAGE);
+                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+                }else if (tabLayout.getSelectedTabPosition() == 2){
+                    SelectLangDialog dialog = SelectLangDialog.newInstance("языка перевода", SelectLangDialog.TRANSLATE_LANGUAGE);
+                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+                }
             }
 
             @Override
@@ -72,6 +74,13 @@ public class TranslateFrg extends Fragment{
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabReselected: " + tab.getText());
+                if (tabLayout.getSelectedTabPosition() == 0){
+                    SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.text_language), SelectLangDialog.TEXT_LANGUAGE);
+                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+                }else if (tabLayout.getSelectedTabPosition() == 2){
+                    SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.tarnslate_language), SelectLangDialog.TRANSLATE_LANGUAGE);
+                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+                }
             }
         });
     }

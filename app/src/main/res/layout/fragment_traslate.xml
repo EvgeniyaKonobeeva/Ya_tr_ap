@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:background="#ffdff0">
 
+
+    <!--таб - переключение между языками-->
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout_language"
         android:layout_width="match_parent"
@@ -34,6 +36,8 @@
             android:text="lang 2"
             android:tag="t3"/>
     </android.support.design.widget.TabLayout>
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="300dp"
