@@ -1,6 +1,4 @@
-package com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs;
-
-import android.os.Parcelable;
+package com.example.evgenia.ya_tr_ap.choose_lang_dialogs;
 
 import java.util.List;
 

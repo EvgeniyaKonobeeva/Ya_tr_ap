@@ -11,14 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs.SelectLangDialog;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.DialogModel;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
  * Created by Evgenia on 02.04.2017.
  */
 
-public class TranslateFrg extends Fragment{
+public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener {
     public final static String TAG = "TranslateFrg";
     private TabLayout tabLayout;
 
@@ -57,13 +59,8 @@ public class TranslateFrg extends Fragment{
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabSelected: ");
-                if (tabLayout.getSelectedTabPosition() == 0){
-                    SelectLangDialog dialog = SelectLangDialog.newInstance("языка текста", SelectLangDialog.TEXT_LANGUAGE);
-                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
-                }else if (tabLayout.getSelectedTabPosition() == 2){
-                    SelectLangDialog dialog = SelectLangDialog.newInstance("языка перевода", SelectLangDialog.TRANSLATE_LANGUAGE);
-                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
-                }
+
+                onSelectLang(tabLayout.getSelectedTabPosition());
             }
 
             @Override
@@ -74,15 +71,36 @@ public class TranslateFrg extends Fragment{
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabReselected: " + tab.getText());
-                if (tabLayout.getSelectedTabPosition() == 0){
-                    SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.text_language), SelectLangDialog.TEXT_LANGUAGE);
-                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
-                }else if (tabLayout.getSelectedTabPosition() == 2){
-                    SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.tarnslate_language), SelectLangDialog.TRANSLATE_LANGUAGE);
-                    dialog.show(getActivity().getSupportFragmentManager(), "dialog");
-                }
+
+                onSelectLang(tabLayout.getSelectedTabPosition());
             }
         });
+    }
+
+    private void onSelectLang(int tabPos){
+
+        if (tabPos == 0){
+
+            SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.text_language),
+                    SelectLangDialog.TEXT_LANGUAGE);
+            dialog.setLangListener(this);
+
+            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+
+        }else if (tabPos == 2){
+
+            SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.tarnslate_language),
+                    SelectLangDialog.TRANSLATE_LANGUAGE);
+            dialog.setLangListener(this);
+
+            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+        }else {
+            onSelectArrow();
+        }
+    }
+
+    private void onSelectArrow(){
+
     }
 
     @Override
@@ -132,6 +150,28 @@ public class TranslateFrg extends Fragment{
         Log.d(TAG, "onSaveInstanceState: ");
         outState.putInt(Utils.TRANSLATE_SELECTED_TAB, tabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    public void showLanguages(TranslateModel translateModel) {
+        renameTabs(translateModel);
+    }
+
+    public void renameTabs(TranslateModel translateModel){
+        tabLayout.getTabAt(0).setText(translateModel.getTextLang());
+        tabLayout.getTabAt(2).setText(translateModel.getTranslateLang());
+    }
+
+
+    @Override
+    public void languageSelected() {
+        /**
+         * одна строка - вызов метода презентера
+         * послать запрос на сервер для перевода
+         * сделать запрос к бд за измененными данными
+         * переименовать табы {@link TranslateFrg#showLanguages(com.example.evgenia.ya_tr_ap.translate.TranslateModel)}
+         * послать запрос к серверу*/
 
     }
 }

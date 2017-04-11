@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs;
+package com.example.evgenia.ya_tr_ap.choose_lang_dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -17,14 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs.recyclerview.RvDialogAdapter;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.http.PUT;
 
 /**
  * Created by Evgenia on 09.04.2017.
@@ -44,7 +42,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     public static @SelectLangDialog.DialogType int getType(int t){
         switch (t){
             case TEXT_LANGUAGE:
-                return TRANSLATE_LANGUAGE;
+                return TEXT_LANGUAGE;
             case TRANSLATE_LANGUAGE:
                 return TRANSLATE_LANGUAGE;
             default:
@@ -52,17 +50,11 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         }
     }
 
-    /**
-     * листенер, который вызываем при выборе языка, и передаем ему тот язык, который выбрали*/
-    public interface OnSelectLangListener{
-        void languageSelected(String lang);
-    }
-
     private static final String TAG = "SelectLangDialog";
     public static final String KEY_TITLE = "key_title";
     public static final String KEY_DIALOG_TYPE = "key_dialog_type";
 
-    private OnSelectLangListener langListener;
+    private RvDialogAdapter.OnSelectLangListener langListener;
     private DialogPresenter presenter;
     private RecyclerView recyclerView;
     private RvDialogAdapter adapter;
@@ -78,7 +70,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         return dialog;
     }
 
-    public void setLangListener(OnSelectLangListener listener){
+    public void setLangListener(RvDialogAdapter.OnSelectLangListener listener){
         this.langListener = listener;
     }
 
@@ -110,7 +102,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         toolbar.setNavigationOnClickListener(this);
         toolbar.setTitle(getArguments().getString(KEY_TITLE));
 
-        initRecylerView(root);
+        initRecyclerView(root);
 
 
         if(presenter != null){
@@ -121,12 +113,24 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         return root;
     }
 
-    private void initRecylerView(View root){
+    private void initRecyclerView(View root){
         recyclerView = (RecyclerView) root.findViewById(R.id.rv_dialog);
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(layoutManager);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
         adapter = new RvDialogAdapter(new ArrayList<DialogModel>());
+
+        if(langListener != null){
+
+            adapter.setListener(langListener);
+        }
+
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -139,6 +143,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     @Override
     public void onDismiss(DialogInterface dialog) {
         Log.d(TAG, "onDismiss: ");
+        presenter.detachView();
         super.onDismiss(dialog);
     }
 

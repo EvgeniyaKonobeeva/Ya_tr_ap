@@ -1,8 +1,10 @@
-package com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs;
+package com.example.evgenia.ya_tr_ap.choose_lang_dialogs;
 
 import android.os.Parcel;
 
 import com.example.evgenia.ya_tr_ap.Presenter;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.DialogContract;
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
 
 import java.util.ArrayList;
 import java.util.List;

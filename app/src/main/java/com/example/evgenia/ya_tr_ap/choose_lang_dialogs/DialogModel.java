@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.translate.choose_lang_dialogs;
+package com.example.evgenia.ya_tr_ap.choose_lang_dialogs;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -19,6 +19,7 @@ public class DialogModel implements Parcelable{
         this.isLatestSelected = isLatestSelected;
         this.isSelected = isSelected;
     }
+
 
     public String getLanguage() {
         return language;
@@ -51,6 +52,7 @@ public class DialogModel implements Parcelable{
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
+
 
     protected DialogModel(Parcel in) {
         language = in.readString();
