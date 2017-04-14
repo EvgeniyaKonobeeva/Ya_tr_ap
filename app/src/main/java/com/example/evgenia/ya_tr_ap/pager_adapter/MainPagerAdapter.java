@@ -3,12 +3,10 @@ package com.example.evgenia.ya_tr_ap.pager_adapter;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
-import com.example.evgenia.ya_tr_ap.hisroty.HistoryFrg;
-import com.example.evgenia.ya_tr_ap.settings.SettingsFrg;
-import com.example.evgenia.ya_tr_ap.translate.TranslateFrg;
+import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -16,25 +14,17 @@ import java.util.ArrayList;
  * Created by Evgenia on 04.04.2017.
  */
 
-public class MainPagerAdapter extends FragmentStatePagerAdapter {
+public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private static final String TAG = "MainPagerAdapter";
 
-    private TranslateFrg translateFrg;
-    private HistoryFrg historyFrg;
-    private SettingsFrg settingsFrg;
+
 
     private ArrayList<Fragment> list;
 
-    public MainPagerAdapter(FragmentManager fm) {
+    public MainPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragmentsList) {
         super(fm);
-        list = new ArrayList<>();
-        translateFrg = new TranslateFrg();
-        historyFrg = new HistoryFrg();
-        settingsFrg = new SettingsFrg();
-        list.add(translateFrg);
-        list.add(historyFrg);
-        list.add(settingsFrg);
+        this.list = fragmentsList;
     }
 
     @Override
@@ -61,7 +51,11 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "title " + position;
+        String title = "";
+        if(list.get(position).getArguments()!= null) {
+            title = list.get(position).getArguments().getString(Utils.KEY_TITLE);
+        }
+        return (CharSequence) title;
     }
 }
 

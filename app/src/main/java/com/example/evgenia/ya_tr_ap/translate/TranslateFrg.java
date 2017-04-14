@@ -14,6 +14,7 @@ import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.DialogModel;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
+import com.example.evgenia.ya_tr_ap.favorites.FavoritesFrg;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
@@ -24,6 +25,17 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public final static String TAG = "TranslateFrg";
     private TabLayout tabLayout;
 
+
+
+    public static TranslateFrg newInstance(String title){
+        Bundle bundle = new Bundle();
+        bundle.putString(Utils.KEY_TITLE, title);
+
+        TranslateFrg translateFrg = new TranslateFrg();
+        translateFrg.setArguments(bundle);
+
+        return translateFrg;
+    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -78,6 +90,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     }
 
     private void onSelectLang(int tabPos){
+        Log.d(TAG, "onSelectLang: ");
 
         if (tabPos == 0){
 
@@ -100,6 +113,11 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     }
 
     private void onSelectArrow(){
+        Log.d(TAG, "onSelectArrow: ");
+        /**
+         * обновляет бд языков
+         * посылает запрос на перевод текста (в этом запросе уже и запрос к бд с изменениями табов и запрос на сервер)
+         * как в {@link TranslateFrg#languageSelected()}*/
 
     }
 
@@ -148,17 +166,18 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
-        outState.putInt(Utils.TRANSLATE_SELECTED_TAB, tabLayout.getSelectedTabPosition());
         super.onSaveInstanceState(outState);
 
     }
 
     @Override
     public void showLanguages(TranslateModel translateModel) {
+        Log.d(TAG, "showLanguages: ");
         renameTabs(translateModel);
     }
 
     public void renameTabs(TranslateModel translateModel){
+        Log.d(TAG, "renameTabs: ");
         tabLayout.getTabAt(0).setText(translateModel.getTextLang());
         tabLayout.getTabAt(2).setText(translateModel.getTranslateLang());
     }
@@ -166,6 +185,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     @Override
     public void languageSelected() {
+        Log.d(TAG, "languageSelected: ");
         /**
          * одна строка - вызов метода презентера
          * послать запрос на сервер для перевода

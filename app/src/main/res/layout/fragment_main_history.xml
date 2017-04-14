@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/vp_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            app:tabMode="fixed"
+            android:background="@color/colorPrimary"
+            app:tabGravity="center">
+            <android.support.design.widget.TabItem
+                android:id="@+id/history"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="history"
+                android:tag="t1"/>
+            <android.support.design.widget.TabItem
+                android:id="@+id/favors"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="favors"
+                android:tag="t2"/>
+
+        </android.support.design.widget.TabLayout>
+
+        <ImageButton
+            android:id="@+id/btn_clear"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:src="@color/colorAccent"
+            android:background="?attr/selectableItemBackground"
+            />
+    </FrameLayout>
+
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_history"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v4.view.ViewPager>
+</LinearLayout>

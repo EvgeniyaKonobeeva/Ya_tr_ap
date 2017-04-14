@@ -24,6 +24,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.evgenia.ya_tr_ap.utils.Utils.KEY_TYPE;
+import static com.example.evgenia.ya_tr_ap.utils.Utils.KEY_TITLE;
+
 /**
  * Created by Evgenia on 09.04.2017.
  */
@@ -51,8 +54,6 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     }
 
     private static final String TAG = "SelectLangDialog";
-    public static final String KEY_TITLE = "key_title";
-    public static final String KEY_DIALOG_TYPE = "key_dialog_type";
 
     private RvDialogAdapter.OnSelectLangListener langListener;
     private DialogPresenter presenter;
@@ -62,7 +63,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     public static SelectLangDialog newInstance(String title, @DialogType int type1){
         Bundle bundle = new Bundle();
         bundle.putString(KEY_TITLE, title);
-        bundle.putInt(KEY_DIALOG_TYPE, type1);
+        bundle.putInt(KEY_TYPE, type1);
 
         SelectLangDialog dialog = new SelectLangDialog();
         dialog.setArguments(bundle);
@@ -107,7 +108,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
 
         if(presenter != null){
             // загрузим из БД даные в зависимости от переданного типа диалога (либо языки перевода, либо языки текста)
-            presenter.loadLanguages(getType(getArguments().getInt(KEY_DIALOG_TYPE)));
+            presenter.loadLanguages(getType(getArguments().getInt(KEY_TYPE)));
         }
 
         return root;

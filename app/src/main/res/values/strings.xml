@@ -7,4 +7,10 @@
     <string name="tarnslate_language">языка перевода</string>
     <string name="recently_used">НЕДАВНО ИСПОЛЬЗОВАННЫЕ</string>
     <string name="all_languages">ВСЕ ЯЗЫКИ</string>
+    <string name="history_title">История</string>
+    <string name="favors_title">Избранное</string>
+    <string name="find_in_history">Найти в истории</string>
+    <string name="find_in_favors">Найти в избранном</string>
+    <string name="no_translate_in_favors">Нет переводов в избранном</string>
+    <string name="no_translate_in_history">Нет переводов в истории</string>
 </resources>

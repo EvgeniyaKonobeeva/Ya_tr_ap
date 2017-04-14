@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
+import com.example.evgenia.ya_tr_ap.favorites.FavoritesFrg;
+import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
  * Created by Evgenia on 02.04.2017.
@@ -18,6 +20,16 @@ public class SettingsFrg extends Fragment {
     public final static String TAG = "SettingsFrg";
 
 
+
+    public static SettingsFrg newInstance(String title){
+        Bundle bundle = new Bundle();
+        bundle.putString(Utils.KEY_TITLE, title);
+
+        SettingsFrg settingsFrg = new SettingsFrg();
+        settingsFrg.setArguments(bundle);
+
+        return settingsFrg;
+    }
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);

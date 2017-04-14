@@ -2,29 +2,20 @@ package com.example.evgenia.ya_tr_ap;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.example.evgenia.ya_tr_ap.hisroty.HistoryFrg;
+import com.example.evgenia.ya_tr_ap.hisroty.MainHistoryFavoritesFrg;
 import com.example.evgenia.ya_tr_ap.pager_adapter.MainPagerAdapter;
 import com.example.evgenia.ya_tr_ap.settings.SettingsFrg;
 import com.example.evgenia.ya_tr_ap.translate.TranslateFrg;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-
-
-
 
 
 
@@ -35,13 +26,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), createFragmentsList()));
         viewPager.setOffscreenPageLimit(2);
         viewPager.setScrollEnable(false);
 
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager, true);
 
+    }
+
+    private ArrayList<Fragment> createFragmentsList(){
+        ArrayList<Fragment> list = new ArrayList<>();
+        TranslateFrg translateFrg =TranslateFrg.newInstance("icon 0");
+        MainHistoryFavoritesFrg historyFrg = MainHistoryFavoritesFrg.newInstance("icon 1");
+        SettingsFrg settingsFrg = SettingsFrg.newInstance("icon 2");
+
+        list.add(translateFrg);
+        list.add(historyFrg);
+        list.add(settingsFrg);
+        return list;
     }
 
 
