@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,18 +17,28 @@ import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.hisroty.HistoryFavorModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by User on 14.04.2017.
  */
 
-public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAdapter.ViewHolder> {
+public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAdapter.ViewHolder> implements Filterable{
+
+    public interface OnRecyclerViewListener{
+        void onListUpdated(int listSize);
+        void onItemClicked();
+    }
 
     private static final String TAG = "RVHistoryAdapter";
     private ArrayList<HistoryFavorModel> list;
+    private Filter filter;
+    private OnRecyclerViewListener listener;
 
-    public RVHistoryFavorAdapter(ArrayList<HistoryFavorModel> list) {
+
+    public RVHistoryFavorAdapter(ArrayList<HistoryFavorModel> list, OnRecyclerViewListener listener) {
         this.list = list;
+        this.listener = listener;
     }
 
     @Override
@@ -47,6 +59,26 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
     }
 
 
+    public void updateItems(ArrayList<HistoryFavorModel> list){
+        Log.d(TAG, "updateItems: ");
+        this.list.clear();
+        this.list.addAll(list);
+        notifyDataSetChanged();
+
+        if(listener != null){
+            listener.onListUpdated(this.list.size());
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if(filter == null){
+            filter = new RVFilter(this, list);
+        }
+        return filter;
+    }
+
+    /*=============== CLASSES ========================*/
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView text;
         private TextView translate;
@@ -86,7 +118,9 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.rl_clickable_layout :
-
+                    if(listener != null){
+                        listener.onItemClicked();
+                    }
                     Toast.makeText(v.getContext(), "translate", Toast.LENGTH_SHORT).show();
                     break;
             }
@@ -94,11 +128,61 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
 
     }
 
-    public void addItems(ArrayList<HistoryFavorModel> list){
-        Log.d(TAG, "addItems: ");
-        this.list.clear();
-        this.list.addAll(list);
-        notifyDataSetChanged();
-    }
 
+    public class RVFilter extends Filter{
+
+        private RVHistoryFavorAdapter adapter;
+
+        private List<HistoryFavorModel> displayedList;
+
+        private List<HistoryFavorModel> filteredList;
+
+        private CharSequence prevChar = "";
+
+        public RVFilter(RVHistoryFavorAdapter adapter, List<HistoryFavorModel> displayedList) {
+            this.adapter = adapter;
+            this.displayedList = new ArrayList<>(displayedList);
+            this.filteredList = new ArrayList<>();
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            Log.d(TAG, "performFiltering: ");
+            filteredList.clear();
+            prevChar = constraint;
+
+            FilterResults results = new FilterResults();
+
+            if (constraint.length() == 0) {
+                filteredList.addAll(displayedList);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (HistoryFavorModel model  : displayedList) {
+                    String text = model.getText().toLowerCase().trim();
+                    String translate = model.getTranslateMain().toLowerCase().trim();
+
+                    if (text.contains(filterPattern) || translate.contains(filterPattern)) {
+                        filteredList.add(model);
+                    }
+                }
+            }
+            results.values = filteredList;
+            results.count = filteredList.size();
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.updateItems((ArrayList)results.values);
+        }
+
+        public void setDisplayedList(List<HistoryFavorModel> displayedList) {
+            this.displayedList.clear();
+            this.displayedList.addAll(displayedList);
+            this.filter(prevChar);
+
+        }
+    }
 }

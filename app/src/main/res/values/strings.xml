@@ -13,4 +13,5 @@
     <string name="find_in_favors">Найти в избранном</string>
     <string name="no_translate_in_favors">Нет переводов в избранном</string>
     <string name="no_translate_in_history">Нет переводов в истории</string>
+    <string name="not_found">ничего не найдено</string>
 </resources>

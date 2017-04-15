@@ -141,6 +141,7 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
     public void onPageSelected(int position) {
         Fragment frg = getChildFragmentManager().findFragmentByTag(makeFragmentName(viewPager.getId(), viewPager.getCurrentItem()));
         if(frg.isAdded()){
+            Log.d(TAG, "onPageSelected: ");
             frg.onResume();
         }
 
