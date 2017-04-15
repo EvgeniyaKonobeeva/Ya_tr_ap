@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
         CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), createFragmentsList()));
-        viewPager.setOffscreenPageLimit(2);
         viewPager.setScrollEnable(false);
 
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout);
@@ -99,6 +98,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        if(fragment != null){
+            if(fragment instanceof MainHistoryFavoritesFrg){
+                getSupportFragmentManager().saveFragmentInstanceState(fragment);
+            }
+        }
         super.onSaveInstanceState(outState);
     }
 }

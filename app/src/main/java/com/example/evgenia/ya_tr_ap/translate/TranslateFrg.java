@@ -20,7 +20,7 @@ import com.example.evgenia.ya_tr_ap.utils.Utils;
 /**
  * Created by Evgenia on 02.04.2017.
  */
-
+// TODO: 14.04.2017 сделать чтою нельзя было выбрать одинаковый язык перевода и набора текста
 public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener {
     public final static String TAG = "TranslateFrg";
     private TabLayout tabLayout;

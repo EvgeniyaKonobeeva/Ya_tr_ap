@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +20,11 @@ import java.util.ArrayList;
 /**
  * Created by Evgenia on 02.04.2017.
  */
-// TODO: 13.04.2017 сделать два перезентера одинаковых, что бы при атачить к ним разные сущности одного фрагмента
-public class MainHistoryFavoritesFrg extends Fragment implements TabLayout.OnTabSelectedListener{
+public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPageChangeListener{
     public final static String TAG = "MainHistoryFavoritesFrg";
     private TabLayout tabLayout;
-    private HistoryFavorsPresenter presenter;
+    private ViewPager viewPager;
+    private ArrayList<Fragment> fragments;
 
     public static MainHistoryFavoritesFrg newInstance(String title){
         Bundle bundle = new Bundle();
@@ -39,6 +40,8 @@ public class MainHistoryFavoritesFrg extends Fragment implements TabLayout.OnTab
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
+
+        fragments = new ArrayList<>();
     }
 
     @Nullable
@@ -47,24 +50,33 @@ public class MainHistoryFavoritesFrg extends Fragment implements TabLayout.OnTab
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_main_history, container, false);
         initViewPager(view);
+
+
+        tabLayout = (TabLayout) view.findViewById(R.id.vp_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
         return view;
 
     }
 
+
     private void initViewPager(View view){
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.vp_history);
-        tabLayout = (TabLayout) view.findViewById(R.id.vp_tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(this);
+        viewPager = (ViewPager) view.findViewById(R.id.vp_history);
+        viewPager.addOnPageChangeListener(this);
 
-        ArrayList<Fragment> fragments = new ArrayList<>();
-
-        fragments.add(HistoryFavoritesFrg.newInstance(getString(R.string.history_title), HistoryFavoritesFrg.HISTORY));
-        fragments.add(HistoryFavoritesFrg.newInstance(getString(R.string.favors_title), HistoryFavoritesFrg.FAVORITES));
+        HistoryFavoritesFrg historyFrg = HistoryFavoritesFrg.newInstance(getString(R.string.history_title), HistoryFavoritesFrg.HISTORY);
+        HistoryFavoritesFrg favorFrg = HistoryFavoritesFrg.newInstance(getString(R.string.favors_title), HistoryFavoritesFrg.FAVORITES);
+        fragments.add(historyFrg);
+        fragments.add(favorFrg);
 
         MainPagerAdapter adapter = new MainPagerAdapter(getChildFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(1);
 
+    }
+
+    private static String makeFragmentName(int viewId, long id) {
+        return "android:switcher:" + viewId + ":" + id;
     }
 
     @Override
@@ -83,6 +95,8 @@ public class MainHistoryFavoritesFrg extends Fragment implements TabLayout.OnTab
     public void onStart() {
         Log.d(TAG, "onStart: ");
         super.onStart();
+
+
     }
 
     @Override
@@ -106,35 +120,34 @@ public class MainHistoryFavoritesFrg extends Fragment implements TabLayout.OnTab
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
-        if(presenter != null) presenter.detachView();
         super.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
+
         super.onSaveInstanceState(outState);
+
     }
 
 
-    /*=========== onTabSelectedListener ===========*/
-
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        /**
-         * запрос через презенетер к бд, в зависимости от выбранной табы - разные виды запросов и разные коллбэки*/
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
     }
 
     @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
-        /**
-         * возможно отмена запроса к бд*/
+    public void onPageSelected(int position) {
+        Fragment frg = getChildFragmentManager().findFragmentByTag(makeFragmentName(viewPager.getId(), viewPager.getCurrentItem()));
+        if(frg.isAdded()){
+            frg.onResume();
+        }
+
     }
 
     @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-        /**
-         * запрос через презенетер к бд, в зависимости от выбранной табы - разные виды запросов и разные коллбэки*/
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

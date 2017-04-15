@@ -3,46 +3,59 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/imageButton"
+    <!--закладка-->
+    <CheckBox
+        android:id="@+id/chb_mark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:src="@drawable/bookmark_selector" />
+        android:button="@drawable/bookmark_selector"/>
 
-    <LinearLayout
-        android:id="@+id/linearL"
-        android:orientation="vertical"
+    <RelativeLayout
+        android:id="@+id/rl_clickable_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_toRightOf="@+id/imageButton">
-        <TextView
-            android:id="@+id/tv_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:text="text1"/>
-        <TextView
-            android:id="@+id/tv_translate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary"
-            android:text="text2"
-            android:layout_marginTop="8dp"/>
-    </LinearLayout>
+        android:layout_toRightOf="@+id/chb_mark"
+        android:background="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/tv_langs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="text"
-        android:layout_gravity="right"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"/>
+        <!--текст и его перевод-->
+        <LinearLayout
+            android:id="@+id/linearL"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:text="text1"/>
+            <TextView
+                android:id="@+id/tv_translate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:text="text2"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+
+        <!--языки-->
+        <TextView
+            android:id="@+id/tv_langs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="text"
+            android:layout_gravity="right"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"/>
+    </RelativeLayout>
+
+
 
 </RelativeLayout>

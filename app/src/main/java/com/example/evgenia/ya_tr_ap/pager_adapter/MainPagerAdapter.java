@@ -4,7 +4,9 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
@@ -24,7 +26,8 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     public MainPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragmentsList) {
         super(fm);
-        this.list = fragmentsList;
+        this.list = new ArrayList<>();
+        this.list.addAll(fragmentsList);
     }
 
     @Override
@@ -57,5 +60,13 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         }
         return (CharSequence) title;
     }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Log.d(TAG, "instantiateItem: ");
+        return super.instantiateItem(container, position);
+    }
+
+
 }
 
