@@ -7,8 +7,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/find_in_history"
-        android:drawableLeft="@mipmap/ic_launcher"
-        android:drawableRight="@mipmap/ic_launcher"/>
+        android:drawableLeft="@mipmap/search_24"
+        android:drawableRight="@mipmap/delete_24"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:focusable="true"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_history"

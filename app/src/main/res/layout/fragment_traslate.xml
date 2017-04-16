@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ffdff0">
+    android:layout_height="match_parent">
 
 
     <!--таб - переключение между языками-->
@@ -14,7 +13,7 @@
         android:layout_height="?android:actionBarSize"
         app:tabMode="fixed"
         app:tabGravity="center"
-        android:background="#5f43ff"
+        android:background="@color/colorPrimary"
         app:tabIndicatorColor="#00000000">
         <android.support.design.widget.TabItem
             android:id="@+id/lang1"
@@ -26,8 +25,7 @@
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:icon="@mipmap/ic_launcher"
-            android:text="arrow"
+            android:icon="@mipmap/resizehorizontal_48"
             android:tag="t2"/>
         <android.support.design.widget.TabItem
             android:id="@+id/lang2"

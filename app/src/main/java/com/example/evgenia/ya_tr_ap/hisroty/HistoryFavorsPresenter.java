@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class HistoryFavorsPresenter extends Presenter<HistoryFavorContract.IHistoryFavorView> implements HistoryFavorContract.IHistoryFavorPresenter {
 
     @Override
-    public void updateBd() {
+    public void updateBdHistory() {
 
     }
 
@@ -27,6 +27,11 @@ public class HistoryFavorsPresenter extends Presenter<HistoryFavorContract.IHist
         if(getView() != null){
             getView().showItems(generateItems(true));
         }
+    }
+
+    @Override
+    public void updateBdFavorites() {
+
     }
 
     private ArrayList<HistoryFavorModel> generateItems(boolean allSelected){

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.favorites.FavoritesFrg;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
@@ -29,6 +28,16 @@ public class SettingsFrg extends Fragment {
         settingsFrg.setArguments(bundle);
 
         return settingsFrg;
+    }
+
+    public static SettingsFrg newInstance(int iconRes){
+        Bundle bundle = new Bundle();
+        bundle.putInt(Utils.KEY_ICON, iconRes);
+
+        SettingsFrg frg = new SettingsFrg();
+        frg.setArguments(bundle);
+
+        return frg;
     }
     @Override
     public void onHiddenChanged(boolean hidden) {

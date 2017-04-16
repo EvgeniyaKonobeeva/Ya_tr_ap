@@ -30,13 +30,13 @@
                 android:id="@+id/tv_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
-                android:text="text1"/>
+                android:text="text1"
+                android:textColor="@color/main_text"/>
             <TextView
                 android:id="@+id/tv_translate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/text"
                 android:text="text2"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>

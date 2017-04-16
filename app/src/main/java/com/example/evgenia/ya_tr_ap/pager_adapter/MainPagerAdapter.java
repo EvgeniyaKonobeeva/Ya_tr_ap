@@ -58,7 +58,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         if(list.get(position).getArguments()!= null) {
             title = list.get(position).getArguments().getString(Utils.KEY_TITLE);
         }
-        return (CharSequence) title;
+        return title;
     }
 
     @Override

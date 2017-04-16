@@ -32,10 +32,12 @@
 
         <ImageButton
             android:id="@+id/btn_clear"
-            android:layout_width="60dp"
+            android:layout_width="?android:actionBarSize"
             android:layout_height="match_parent"
             android:layout_gravity="right"
-            android:src="@color/colorAccent"
+            android:src="@mipmap/delete_481"
+            android:scaleType="fitCenter"
+            android:padding="15dp"
             android:background="?attr/selectableItemBackground"
             />
     </FrameLayout>

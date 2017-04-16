@@ -14,7 +14,6 @@ import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.DialogModel;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
-import com.example.evgenia.ya_tr_ap.favorites.FavoritesFrg;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 /**
@@ -30,6 +29,16 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public static TranslateFrg newInstance(String title){
         Bundle bundle = new Bundle();
         bundle.putString(Utils.KEY_TITLE, title);
+
+        TranslateFrg translateFrg = new TranslateFrg();
+        translateFrg.setArguments(bundle);
+
+        return translateFrg;
+    }
+
+    public static TranslateFrg newInstance(int iconRes){
+        Bundle bundle = new Bundle();
+        bundle.putInt(Utils.KEY_ICON, iconRes);
 
         TranslateFrg translateFrg = new TranslateFrg();
         translateFrg.setArguments(bundle);

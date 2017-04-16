@@ -12,7 +12,8 @@ public interface HistoryFavorContract {
          * запрос по истории
          * запрос по закладкам */
 
-        void updateBd();
+        void updateBdHistory();
+        void updateBdFavorites();
         void downLoadAllHistory();
         void downLoadFavorites();
 

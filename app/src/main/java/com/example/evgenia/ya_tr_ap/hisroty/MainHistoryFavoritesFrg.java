@@ -10,9 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.pager_adapter.MainPagerAdapter;
+import com.example.evgenia.ya_tr_ap.translate.TranslateFrg;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 import java.util.ArrayList;
@@ -21,10 +24,16 @@ import java.util.ArrayList;
  * Created by Evgenia on 02.04.2017.
  */
 public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPageChangeListener{
+
+    public interface OnTabClickListener{
+        void onClearItems();
+    }
+
     public final static String TAG = "MainHistoryFavoritesFrg";
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ArrayList<Fragment> fragments;
+    private ImageButton btnClear;
 
     public static MainHistoryFavoritesFrg newInstance(String title){
         Bundle bundle = new Bundle();
@@ -34,6 +43,16 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
         mainHistoryFavoritesFrg.setArguments(bundle);
 
         return mainHistoryFavoritesFrg;
+    }
+
+    public static MainHistoryFavoritesFrg newInstance(int iconRes){
+        Bundle bundle = new Bundle();
+        bundle.putInt(Utils.KEY_ICON, iconRes);
+
+        MainHistoryFavoritesFrg frg = new MainHistoryFavoritesFrg();
+        frg.setArguments(bundle);
+
+        return frg;
     }
 
     @Override
@@ -50,10 +69,10 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_main_history, container, false);
         initViewPager(view);
+        initTabLayout(view);
 
 
-        tabLayout = (TabLayout) view.findViewById(R.id.vp_tabs);
-        tabLayout.setupWithViewPager(viewPager);
+
 
         return view;
 
@@ -73,6 +92,23 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
 
+    }
+
+
+    private void initTabLayout(View root){
+        tabLayout = (TabLayout) root.findViewById(R.id.vp_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        btnClear = (ImageButton)root.findViewById(R.id.btn_clear);
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment frg = getChildFragmentManager().findFragmentByTag(makeFragmentName(viewPager.getId(), viewPager.getCurrentItem()));
+                if(frg.isAdded() && frg instanceof OnTabClickListener){
+                    Log.d(TAG, "onClick: ");
+                    ((OnTabClickListener)frg).onClearItems();
+                }
+            }
+        });
     }
 
     private static String makeFragmentName(int viewId, long id) {

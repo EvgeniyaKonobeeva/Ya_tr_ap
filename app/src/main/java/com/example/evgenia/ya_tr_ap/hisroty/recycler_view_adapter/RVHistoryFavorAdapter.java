@@ -68,6 +68,8 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
         if(listener != null){
             listener.onListUpdated(this.list.size());
         }
+
+        ((RVFilter)getFilter()).setDisplayedList(this.list);
     }
 
     @Override
@@ -77,6 +79,7 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
         }
         return filter;
     }
+
 
     /*=============== CLASSES ========================*/
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -100,6 +103,7 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     list.get(getAdapterPosition()).setMarked(mark.isChecked());
+                    // TODO: 15.04.2017 бновить запись в бд
                 }
             });
 
@@ -175,7 +179,12 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            adapter.updateItems((ArrayList)results.values);
+            adapter.list.clear();
+            adapter.list.addAll((ArrayList)results.values);
+            notifyDataSetChanged();
+            if(listener != null){
+                listener.onListUpdated(results.count);
+            }
         }
 
         public void setDisplayedList(List<HistoryFavorModel> displayedList) {

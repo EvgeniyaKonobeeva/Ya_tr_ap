@@ -6,11 +6,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.example.evgenia.ya_tr_ap.hisroty.MainHistoryFavoritesFrg;
 import com.example.evgenia.ya_tr_ap.pager_adapter.MainPagerAdapter;
 import com.example.evgenia.ya_tr_ap.settings.SettingsFrg;
 import com.example.evgenia.ya_tr_ap.translate.TranslateFrg;
+import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -26,19 +28,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), createFragmentsList()));
+        ArrayList<Fragment> list = createFragmentsList();
+        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), list));
         viewPager.setScrollEnable(false);
 
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager, true);
+        for(int i = 0; i < tabLayout.getTabCount(); i++){
+            int res;
+            if(list.get(i).getArguments() != null){
+                if((res = list.get(i).getArguments().getInt(Utils.KEY_ICON)) != 0){
+                    tabLayout.getTabAt(i).setIcon(res);
+                }
+            }
+        }
 
     }
 
     private ArrayList<Fragment> createFragmentsList(){
         ArrayList<Fragment> list = new ArrayList<>();
-        TranslateFrg translateFrg =TranslateFrg.newInstance("icon 0");
-        MainHistoryFavoritesFrg historyFrg = MainHistoryFavoritesFrg.newInstance("icon 1");
-        SettingsFrg settingsFrg = SettingsFrg.newInstance("icon 2");
+        TranslateFrg translateFrg =TranslateFrg.newInstance(R.mipmap.language_48);
+        MainHistoryFavoritesFrg historyFrg = MainHistoryFavoritesFrg.newInstance(R.mipmap.bookmark_ribbon);
+        SettingsFrg settingsFrg = SettingsFrg.newInstance(R.mipmap.settings_48);
 
         list.add(translateFrg);
         list.add(historyFrg);
@@ -105,5 +116,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onSaveInstanceState(outState);
+    }
+
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK &&
+                event.getAction() == KeyEvent.ACTION_UP) {
+//            revalidateEditText();
+            return false;
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

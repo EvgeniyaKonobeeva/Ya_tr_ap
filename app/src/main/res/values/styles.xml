@@ -11,4 +11,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+
+    <style name="MatchActivityDialog" parent="AppTheme">
+
+        <item name="android:windowEnterAnimation">@anim/slide_in_l</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_r</item>
+    </style>
+
 </resources>

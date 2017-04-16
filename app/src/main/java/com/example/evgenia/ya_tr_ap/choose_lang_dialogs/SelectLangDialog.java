@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
@@ -90,7 +92,10 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+        Dialog dialog =  new Dialog(getContext(),R.style.MatchActivityDialog);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        return dialog;
     }
 
     @Nullable
@@ -112,6 +117,12 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         }
 
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        super.onStart();
     }
 
     private void initRecyclerView(View root){

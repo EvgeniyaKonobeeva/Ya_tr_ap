@@ -1,5 +1,6 @@
 package com.example.evgenia.ya_tr_ap.hisroty;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
@@ -11,8 +12,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
  * Created by User on 12.04.2017.
  */
 
-public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContract.IHistoryFavorView, RVHistoryFavorAdapter.OnRecyclerViewListener{
+public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContract.IHistoryFavorView, RVHistoryFavorAdapter.OnRecyclerViewListener, MainHistoryFavoritesFrg.OnTabClickListener{
 
     private EditText etSearch;
     private RecyclerView recyclerView;
@@ -104,7 +108,33 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
 
     private void initTextSearch(View root){
         etSearch = (EditText)root.findViewById(R.id.et_search);
+        etSearch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
 
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (etSearch.getRight() - etSearch.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Log.d(TAG, "onTouch: right");
+                        etSearch.setText("");
+                        etSearch.clearFocus();
+                        return true;
+                    }else if(event.getRawX() <= (etSearch.getLeft() + etSearch.getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())){
+                        Log.d(TAG, "onTouch: left");
+
+                        InputMethodManager imm =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                        ((RVHistoryFavorAdapter)recyclerView.getAdapter()).getFilter().filter(etSearch.getText());
+                        return true;
+                    }
+//
+                }
+                return false;
+            }
+        });
         emptyList = (LinearLayout) root.findViewById(R.id.linear_emmpty_list);
 
         tvEmptyList = (TextView)root.findViewById(R.id.tv_empty_list);
@@ -238,16 +268,30 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
         if (recyclerView.getAdapter() instanceof RVHistoryFavorAdapter){
             RVHistoryFavorAdapter adapter = ((RVHistoryFavorAdapter)recyclerView.getAdapter());
             adapter.updateItems(list);
-            ((RVHistoryFavorAdapter.RVFilter)adapter.getFilter()).setDisplayedList(list);
-
-
         }else {
             Log.i(TAG + getArguments().getInt(Utils.KEY_TYPE), "showItems: should be type RVHistoryFavorAdapter");
         }
     }
 
+    @Override
+    public void onClearItems() {
+        // TODO: 15.04.2017 обновить бд показать диалог
+        if(presenter != null){
+            if( getArguments().getInt(Utils.KEY_TYPE) == HISTORY){
+                presenter.updateBdHistory();
+            }else {
+                presenter.updateBdFavorites();
+            }
+        }
 
+        if(recyclerView != null){
+            if(recyclerView.getAdapter() instanceof RVHistoryFavorAdapter) {
+                RVHistoryFavorAdapter adapter =(RVHistoryFavorAdapter) recyclerView.getAdapter();
+                adapter.updateItems(new ArrayList<HistoryFavorModel>());
+            }
+        }
 
+    }
 
     /* ========= RECYCLER VIEW LISTENER METHODS =================*/
     @Override
@@ -258,13 +302,13 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
             recyclerView.setVisibility(View.GONE);
             emptyList.setVisibility(View.VISIBLE);
             tvEmptyList.setText(getActivity().getString(R.string.not_found));
-            // TODO: 15.04.2017 add text visible
 
         }else if (listSize == 0){
             Log.d(TAG, "onListUpdated: 2");
             etSearch.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             emptyList.setVisibility(View.VISIBLE);
+
             setStrings();
         }else if(listSize > 0){
             Log.d(TAG, "onListUpdated: 3");
