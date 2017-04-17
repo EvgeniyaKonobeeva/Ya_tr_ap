@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/translate_et_height">
+    <EditText
+        android:id="@+id/et_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_text"
+        android:gravity="top|left"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:overScrollMode="always"
+        android:minLines="10"
+        android:maxWidth="@dimen/translate_et_height"
+        android:background="@android:color/transparent"
+        android:layout_above="@+id/rl_buttons"
+        android:layout_alignParentTop="true"
+        android:focusable="true"/>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/iv_clear"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentLeft="true"
+            android:src="@mipmap/delete_48"
+            android:scaleType="centerInside"/>
+
+        <ImageView
+            android:id="@+id/iv_translate"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/language_48"
+            android:scaleType="centerInside"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

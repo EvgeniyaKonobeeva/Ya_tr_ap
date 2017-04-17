@@ -113,7 +113,9 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
 
         if(presenter != null){
             // загрузим из БД даные в зависимости от переданного типа диалога (либо языки перевода, либо языки текста)
-            presenter.loadLanguages(getType(getArguments().getInt(KEY_TYPE)));
+            if(getArguments() != null) {
+                presenter.loadLanguages(getType(getArguments().getInt(KEY_TYPE)));
+            }
         }
 
         return root;
