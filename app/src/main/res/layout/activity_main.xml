@@ -7,14 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.evgenia.ya_tr_ap.MainActivity">
+    tools:context="com.example.evgenia.ya_tr_ap.presentation_layer.MainActivity">
 
-    <com.example.evgenia.ya_tr_ap.CustomViewPager
+    <com.example.evgenia.ya_tr_ap.presentation_layer.ui.CustomViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-    </com.example.evgenia.ya_tr_ap.CustomViewPager>
+    </com.example.evgenia.ya_tr_ap.presentation_layer.ui.CustomViewPager>
 
 
     <!--таб - переключение между фрагментами перевод, истояри/закладки, настройки-->
