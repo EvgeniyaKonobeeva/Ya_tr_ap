@@ -8,13 +8,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
 import com.example.evgenia.ya_tr_ap.hisroty.MainHistoryFavoritesFrg;
 import com.example.evgenia.ya_tr_ap.pager_adapter.MainPagerAdapter;
+import com.example.evgenia.ya_tr_ap.preferences.Preferences;
 import com.example.evgenia.ya_tr_ap.settings.SettingsFrg;
 import com.example.evgenia.ya_tr_ap.translate.TranslateFrg;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 import java.util.ArrayList;
+
+import static com.example.evgenia.ya_tr_ap.translate.TranslateFrg.DIALOG_TAG;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -61,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         Log.d(TAG, "onStart: ");
+        Preferences.createPreferences(this);
+        Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, "en");
+        Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, "ru");
         super.onStart();
     }
 
@@ -73,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: ");
+
         super.onDestroy();
     }
 
@@ -109,21 +117,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        if(fragment != null){
-            if(fragment instanceof MainHistoryFavoritesFrg){
-                getSupportFragmentManager().saveFragmentInstanceState(fragment);
-            }
-        }
         super.onSaveInstanceState(outState);
     }
 
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK &&
-                event.getAction() == KeyEvent.ACTION_UP) {
-//            revalidateEditText();
-            return false;
-        }
-        return super.dispatchKeyEvent(event);
-    }
 }

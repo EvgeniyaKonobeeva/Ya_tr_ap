@@ -20,10 +20,13 @@ import java.util.List;
 // TODO: 12.04.2017 сделать два вьюхолдера с некликабельными ячейками, или настроить заголовки как не кликабельные
 public class RvDialogAdapter extends RecyclerView.Adapter {
 
+    private static final int TYPE_LANG = 0;
+    private static final int TYPE_HEADER = 1;
+
     /**
      * листенер, который вызываем при выборе языка, и передаем ему тот язык, который выбрали*/
     public interface OnSelectLangListener{
-        void languageSelected();
+        void languageSelected(String language);
     }
 
     private List<Object> itemList;
@@ -39,13 +42,37 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_frg_select_lang_item, parent, false);
-        return new VHLangs(view);
+        if(viewType == TYPE_LANG) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_frg_select_lang_item, parent, false);
+            return new VHLangs(view);
+
+        }else if(viewType == TYPE_HEADER){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_frg_select_lang_item_title, parent, false);
+            return new VHeaders(view);
+        }else
+            return null;
+
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((VHLangs)holder).onBind(position);
+        if(holder != null){
+            if(holder instanceof VHeaders){
+                ((VHeaders)holder).textView.setText(itemList.get(position).toString().toUpperCase());
+            }else {
+                ((VHLangs)holder).onBind(position);
+            }
+        }
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(itemList.get(position) instanceof DialogModel){
+            return TYPE_LANG;
+        }else if(itemList.get(position) instanceof String){
+            return TYPE_HEADER;
+        }else return -1;
     }
 
     @Override
@@ -56,7 +83,6 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
     public void updateItems(List<DialogModel> list){
         this.itemList.clear();
         this.itemList.addAll(list);
-        getAllLangPosition(list);
         notifyDataSetChanged();
     }
 
@@ -64,26 +90,6 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
         this.listener = listener;
     }
 
-    /**
-     * в метод должен приходить отсортированный список, в начале списка языки - недавно выбранные
-     * считаем последнюю позицию недавно выбранных и после нее вставляем заголовок "все языки"
-     *
-     * или заранее определиться с числом последних выбранных
-     * или делать три запроса и отдально парсить три отдельно запроса
-     * на недавние, на выбранный и на остальные */
-    public void getAllLangPosition(List<DialogModel> list){
-        for(DialogModel mod : list){
-            if(mod.isLatestSelected()){
-                allLangsPosition++;
-            }else {
-                break;
-            }
-        }
-
-        this.itemList.add(0,new Object());
-        this.itemList.add(allLangsPosition+1, new Object());
-
-    }
 
 
 //    ============= HOLDER ==========
@@ -91,47 +97,53 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
     public class VHLangs extends RecyclerView.ViewHolder{
         TextView text;
         View marker;
-        public VHLangs(View itemView) {
+        public VHLangs(final View itemView) {
             super(itemView);
             text = (TextView)itemView.findViewById(R.id.tv_language);
-            marker = itemView.findViewById(R.id.v_marker);
+            marker = itemView.findViewById(R.id.iv_checkmark);
 
-            if(getAdapterPosition() != 0 && getAdapterPosition() != allLangsPosition+1) {
 
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (listener != null) {
-                            listener.languageSelected();
-                        }
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    DialogModel dialogModel = (DialogModel) itemList.get(position);
 
-                        /**
-                         * ИЗМЕНЕНИЯ В БД ЧЕРЕЗ ПРЕЗЕНТЕР
-                         * при изменении выбранного языка в одной таблице, убедиться, что язык в другой таблице не одинаков
-                         * иначе - сменить язык другого диалога
-                         * УНИЧТОЖИТЬ ДИАЛОГ
-                         * отправка сигнала к листенеру, где оттуда - ЗАПРОС К БД, и к серверу*/
+                    if (listener != null) {
+                        listener.languageSelected(dialogModel.getLanguageCode());
                     }
-                });
-            }
+
+
+
+                    /**
+                     * ИЗМЕНЕНИЯ В БД ЧЕРЕЗ ПРЕЗЕНТЕР
+                     * при изменении выбранного языка в одной таблице, убедиться, что язык в другой таблице не одинаков
+                     * иначе - сменить язык другого диалога
+                     * УНИЧТОЖИТЬ ДИАЛОГ
+                     * отправка сигнала к листенеру, где оттуда - ЗАПРОС К БД, и к серверу*/
+                }
+            });
         }
 
         public void onBind(int position){
 
-            if(position == 0 && allLangsPosition > 0) {
-                text.setText(text.getContext().getString(R.string.recently_used));
+            DialogModel mod = (DialogModel)itemList.get(position);
+            text.setText(mod.getLanguage());
+            if(mod.isSelected()){
+                marker.setVisibility(View.VISIBLE);
+            }else
+                marker.setVisibility(View.GONE);
 
-            }else if(position == allLangsPosition + 1 || allLangsPosition == 0){
-                text.setText(text.getContext().getString(R.string.all_languages));
 
-            }else {
-                DialogModel mod = (DialogModel)itemList.get(position);
-                text.setText(mod.getLanguage());
-                if(mod.isSelected()){
-                    marker.setVisibility(View.VISIBLE);
-                }else marker.setVisibility(View.GONE);
-            }
+        }
+    }
 
+
+    public class VHeaders extends RecyclerView.ViewHolder{
+        private TextView textView;
+        public VHeaders(View itemView) {
+            super(itemView);
+            textView = (TextView)itemView.findViewById(R.id.tv_title);
         }
     }
 

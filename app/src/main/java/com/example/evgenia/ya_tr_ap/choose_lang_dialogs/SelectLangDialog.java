@@ -63,6 +63,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     private RvDialogAdapter adapter;
 
     public static SelectLangDialog newInstance(String title, @DialogType int type1){
+        Log.d(TAG, "newInstance: ");
         Bundle bundle = new Bundle();
         bundle.putString(KEY_TITLE, title);
         bundle.putInt(KEY_TYPE, type1);
@@ -92,6 +93,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateDialog: ");
         Dialog dialog =  new Dialog(getContext(),R.style.MatchActivityDialog);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -102,6 +104,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        Log.d(TAG, "onCreateView: ");
         View root = inflater.inflate(R.layout.dialog_frg_choose_lang, container, false);
 
         Toolbar toolbar = (Toolbar)root.findViewById(R.id.toolbar);
@@ -123,6 +126,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: ");
         getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         super.onStart();
     }
@@ -162,7 +166,28 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     }
 
     @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        /*An obsolete DISMISS message for the fragment is retained in the message queue.
+        It's been queued by DialogFragment.onDestroyView() when dismissing the old dialog and
+        gets reactivated after creating the new dialog. */
+
+        if (getDialog() != null) {
+            getDialog().setOnDismissListener(null);
+        }
+        super.onDestroyView();
+    }
+
+    @Override
     public void onClick(View v) {
+        Log.d(TAG, "onClick: ");
         dismiss();
     }
 
@@ -171,5 +196,10 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         if(adapter != null){
             adapter.updateItems(itemList);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

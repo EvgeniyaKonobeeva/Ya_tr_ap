@@ -44,8 +44,7 @@
         android:background="@color/background"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:overScrollMode="never">
+        android:layout_marginLeft="16dp">
     </android.support.v7.widget.RecyclerView>
 
 

@@ -28,10 +28,14 @@ import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.DialogModel;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog;
 import com.example.evgenia.ya_tr_ap.choose_lang_dialogs.recyclerview.RvDialogAdapter;
 import com.example.evgenia.ya_tr_ap.hisroty.HistoryFavorModel;
+import com.example.evgenia.ya_tr_ap.preferences.Preferences;
+import com.example.evgenia.ya_tr_ap.translate.recyclerview.MyLL;
 import com.example.evgenia.ya_tr_ap.translate.recyclerview.RvEnterTextAdapter;
 import com.example.evgenia.ya_tr_ap.utils.Utils;
 
 import java.util.ArrayList;
+
+import static com.example.evgenia.ya_tr_ap.choose_lang_dialogs.SelectLangDialog.TEXT_LANGUAGE;
 
 /**
  * Created by Evgenia on 02.04.2017.
@@ -39,6 +43,8 @@ import java.util.ArrayList;
 // TODO: 14.04.2017 сделать чтою нельзя было выбрать одинаковый язык перевода и набора текста
 public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener, RvEnterTextAdapter.RvEnterTextAdapterListener{
     public final static String TAG = "TranslateFrg";
+
+    public static final String DIALOG_TAG = "dialog_tag";
     private TabLayout tabLayout;
     private RecyclerView rvEnterText;
     private RecyclerView rvTranslate;
@@ -68,11 +74,12 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     }
 
 
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        Log.d(TAG, "onCreate: ");
-//    }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "onCreate: ");
+    }
 
     @Nullable
     @Override
@@ -81,6 +88,19 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
         View view = inflater.inflate(R.layout.fragment_traslate, container, false);
 
         initTablayout(view);
+
+        if(savedInstanceState != null){
+            if(getActivity() != null) {
+                Log.d(TAG, "onCreateView: not null");
+
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+                if(fragment != null && fragment instanceof SelectLangDialog){
+                    Log.d(TAG, "find: dialog");
+                    ((SelectLangDialog)fragment).setLangListener(this);
+
+                }
+            }
+        }
         initRecyclerViewText(view);
         initRecyclerViewTranslate(view);
 
@@ -102,16 +122,17 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     private void initRecyclerViewText(View root){
         rvEnterText = (RecyclerView)root.findViewById(R.id.rv_et_text);
-        rvEnterText.setHasFixedSize(true);
-        rvEnterText.setNestedScrollingEnabled(true);
-        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(rvEnterText.getContext(),LinearLayoutManager.VERTICAL,false) {
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         };
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(rvEnterText.getContext(), LinearLayoutManager.VERTICAL,false);
-        rvEnterText.setLayoutManager(linearLayoutManager);
+
+
+        MyLL ll = new MyLL(getContext(), LinearLayoutManager.VERTICAL, false);
+        ll.setScrollEnabled(false);
+        rvEnterText.setLayoutManager(ll);
 
         ArrayList<String> arr = new ArrayList<String>();
         for(int i = 0; i < 20; i++){
@@ -207,10 +228,10 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
         if (tabPos == 0){
 
             SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.text_language),
-                    SelectLangDialog.TEXT_LANGUAGE);
+                    TEXT_LANGUAGE);
             dialog.setLangListener(this);
 
-            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+            dialog.show(getActivity().getSupportFragmentManager(), DIALOG_TAG);
 
         }else if (tabPos == 2){
 
@@ -218,7 +239,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
                     SelectLangDialog.TRANSLATE_LANGUAGE);
             dialog.setLangListener(this);
 
-            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+            dialog.show(getActivity().getSupportFragmentManager(), DIALOG_TAG);
         }else {
             onSelectArrow();
         }
@@ -233,71 +254,99 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     }
 
-//    @Override
-//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        Log.d(TAG, "onViewCreated: ");
-//    }
-//
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        Log.d(TAG, "onActivityCreated: ");
-//        super.onActivityCreated(savedInstanceState);
-//    }
-//
-//    @Override
-//    public void onStart() {
-//        Log.d(TAG, "onStart: ");
-//        super.onStart();
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        Log.d(TAG, "onResume: ");
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        Log.d(TAG, "onPause: ");
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        Log.d(TAG, "onStop: ");
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        Log.d(TAG, "onDestroy: ");
-//        super.onDestroy();
-//    }
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        Log.d(TAG, "onSaveInstanceState: ");
-//        super.onSaveInstanceState(outState);
-//
-//    }
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated: ");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: ");
+        Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+
+        if(fragment != null && fragment instanceof SelectLangDialog
+                && fragment.isVisible() && fragment.getArguments()!= null) {
+            Log.d(TAG, "onSaveInstanceState: dialog opened");
+            outState.putInt(DIALOG_TAG, fragment.getArguments().getInt(Utils.KEY_TYPE));
+        }
+
+        super.onSaveInstanceState(outState);
+
+    }
 
     @Override
     public void showLanguages(TranslateModel translateModel) {
         Log.d(TAG, "showLanguages: ");
-        renameTabs(translateModel);
     }
 
-    public void renameTabs(TranslateModel translateModel){
+    public void renameTabs(String text, String translate){
         Log.d(TAG, "renameTabs: ");
-        tabLayout.getTabAt(0).setText(translateModel.getTextLang());
-        tabLayout.getTabAt(2).setText(translateModel.getTranslateLang());
+        tabLayout.getTabAt(0).setText(text);
+        tabLayout.getTabAt(2).setText(translate);
     }
 
 
     @Override
-    public void languageSelected() {
+    public void languageSelected(String language) {
         Log.d(TAG, "languageSelected: ");
+
+        if(getActivity() != null){
+
+            Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+
+
+            if(fragment != null && fragment instanceof SelectLangDialog
+                    && fragment.getArguments()!= null && fragment.isVisible()){
+
+
+
+                int type = fragment.getArguments().getInt(Utils.KEY_TYPE);
+                changeLanguagePreferences(language, type);
+
+
+                ((SelectLangDialog)fragment).dismiss();
+            }
+        }
+
+        // TODO: 17.04.2017 update database
         /**
          * одна строка - вызов метода презентера
          * послать запрос на сервер для перевода
@@ -306,6 +355,42 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
          * послать запрос к серверу*/
 
     }
+
+    private void changeLanguagePreferences(String newLang, int type){
+
+        String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG);
+        String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG);
+
+        if(type == SelectLangDialog.TEXT_LANGUAGE && translateLang.equals(newLang)){
+
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, textLang);
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, newLang);
+
+        }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE && textLang.equals(newLang)){
+
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, translateLang);
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, newLang);
+
+
+        }else if(type == SelectLangDialog.TEXT_LANGUAGE){
+
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, newLang);
+
+        }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE){
+
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, newLang);
+
+        }
+
+        textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG);
+        translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG);
+        // TODO: 17.04.2017 update database
+        renameTabs(textLang, translateLang);
+
+    }
+
+
+
 
     @Override
     public void onClickTranslate(String textToTranslate) {
