@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.DialogModel;
+import com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,9 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
      * позиция с которой начинается список "все языки" и заканчивается список "недавно использованные"*/
     private int allLangsPosition = 0;
 
-    public RvDialogAdapter(List<DialogModel> itemList) {
+    public RvDialogAdapter(ArrayList<DialogModel> itemList) {
         this.itemList = new ArrayList<>();
-        this.itemList.addAll(itemList);
+        updateListByInsertingHeaders(itemList);
     }
 
     @Override
@@ -83,6 +84,26 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
         this.itemList.clear();
         this.itemList.addAll(list);
         notifyDataSetChanged();
+    }
+    /**
+     * получаем из бд языки и недавние до 3 штук {@link Utils#NUMBER_RECENT_LANGS} и все вместе
+     * чтоб понять какие из прияланях - недавние языки, и где нужен заголовок
+     * отсортируем скписок
+     * если какая-то модель встречается два раза, то она есть в списке недавних языков
+     * считаем сколько таких "удвоенных можелей и вставляем в список заголовок на нужное место"*/
+    public void updateListByInsertingHeaders(ArrayList<DialogModel> list){
+        ArrayList<DialogModel> nList = new ArrayList<>();
+        nList.addAll(list.subList(0, Utils.NUMBER_RECENT_LANGS));
+        int countRecent = 0;
+        for(DialogModel dm : nList){
+            if(list.contains(dm)) countRecent++;
+        }
+
+        itemList.addAll(list);
+        itemList.add(countRecent, "Все языки");
+        if(countRecent > 0){
+            itemList.add(0, "Недавние языки");
+        }
     }
 
     public void setListener(OnSelectLangListener listener) {

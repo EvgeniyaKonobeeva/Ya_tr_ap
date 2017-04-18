@@ -20,6 +20,10 @@ public class DialogModel implements Parcelable{
         this.isSelected = isSelected;
     }
 
+    public DialogModel(String language, String languageCode) {
+        this.language = language;
+        this.languageCode = languageCode;
+    }
 
     public String getLanguage() {
         return language;
@@ -53,6 +57,14 @@ public class DialogModel implements Parcelable{
         isSelected = selected;
     }
 
+
+    @Override
+    public boolean equals(Object obj) {
+        DialogModel dm = (DialogModel)obj;
+        if( this.language.equals(dm.getLanguage()) && this.languageCode.equals(dm.getLanguageCode())){
+            return true;
+        }else return false;
+    }
 
     protected DialogModel(Parcel in) {
         language = in.readString();

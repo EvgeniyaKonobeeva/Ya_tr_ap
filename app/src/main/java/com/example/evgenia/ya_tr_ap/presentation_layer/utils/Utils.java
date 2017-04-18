@@ -10,4 +10,7 @@ public class Utils {
     public static final String KEY_ICON = "key_icon";
     public static final String KEY_TYPE = "key_dialog_type";
     public static final String KEY_CURR_NUM = "key_curr_num";
+    public static final int NUMBER_RECENT_LANGS = 3;
+
+
 }

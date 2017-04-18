@@ -1,26 +1,51 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs;
 
 
+import android.util.Log;
+
+import com.example.evgenia.ya_tr_ap.domain_layer.languages.SelectLangsRx;
 import com.example.evgenia.ya_tr_ap.presentation_layer.Presenter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Evgenia on 09.04.2017.
  */
 
 public class DialogPresenter extends Presenter<DialogContract.IDialogView> implements DialogContract.IDialogPresenter {
+    private static final String TAG = "DialogPresenter";
+
     @Override
     public void loadLanguages(@SelectLangDialog.DialogType int dtype) {
-        if(getView() != null){
-
-            getView().showItems(generateList());
-        }
+        SelectLangsRx.getSupportedLanguages(dtype)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(TAG, "call: " + throwable);
+                    }
+                })
+                .subscribe(new Action1<ArrayList<DialogModel>>() {
+                    @Override
+                    public void call(ArrayList<DialogModel> objects) {
+                        if(getView() != null){
+                            getView().showItems(objects);
+                        }
+                    }
+                });
     }
 
     @Override
     public void updateLanguagesDb() {
+
 
     }
 

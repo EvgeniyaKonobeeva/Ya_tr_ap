@@ -2,7 +2,9 @@ package com.example.evgenia.ya_tr_ap.presentation_layer;
 
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.evgenia.ya_tr_ap.data_layer.database.SqliteHelper;
 
@@ -11,14 +13,19 @@ import com.example.evgenia.ya_tr_ap.data_layer.database.SqliteHelper;
  */
 
 public class MyApp extends Application {
+    private static final String TAG = "MyApp";
     private static SqliteHelper dbHelper;
 
     public static SQLiteDatabase getDb(){
-        if(dbHelper != null) {
-            return dbHelper.getReadableDatabase();
-        }else {
-            return null;
+        SQLiteDatabase db = null;
+        try {
+            db = dbHelper.getReadableDatabase();
+        }catch (SQLiteException slite){
+            Log.d(TAG, "getDb: " + slite.getMessage());
+        }finally {
+            dbHelper.close();
         }
+        return db;
     }
 
     @Override
