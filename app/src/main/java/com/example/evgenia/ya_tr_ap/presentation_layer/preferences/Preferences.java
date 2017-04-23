@@ -3,21 +3,34 @@ package com.example.evgenia.ya_tr_ap.presentation_layer.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.IntDef;
+import android.util.Log;
+
+import com.example.evgenia.ya_tr_ap.domain_layer.PreferenceRx;
+import com.example.evgenia.ya_tr_ap.domain_layer.TranslateRx;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by User on 17.04.2017.
  */
 
-public class Preferences {
+public class Preferences{
     public static final String FILE_PREFERENCES = "preferences_file";
+    private static final String TAG = "Preferences";
+    public static SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     public enum EnumKeys{
 
-        ENTER_TEXT_LANG(TYPE_STRING),
-        TRANSLATE_TEXT_LANG(TYPE_STRING);
+        ENTER_TEXT_LANG_CODE(TYPE_STRING),
+        TRANSLATE_TEXT_LANG_CODE(TYPE_STRING),
+        ENTER_TEXT_LANG_FULL(TYPE_STRING),
+        TRANSLATE_TEXT_LANG_FULL(TYPE_STRING);
+
 
 
 
@@ -48,11 +61,26 @@ public class Preferences {
 
     public static SharedPreferences preferences;
 
+
     public static void createPreferences(Context context){
         preferences = context.getSharedPreferences(FILE_PREFERENCES, Context.MODE_PRIVATE);
+
+        listener = (sharedPreferences, key) -> {
+            Log.d(TAG, "onSharedPreferenceChanged: key=" + key + " my=" + EnumKeys.ENTER_TEXT_LANG_CODE.toString());
+            if(key.equals(EnumKeys.ENTER_TEXT_LANG_CODE.name())){
+                String textLang = (String) Preferences.getPreference(EnumKeys.ENTER_TEXT_LANG_CODE);
+                updateTextLangInDb(textLang);
+            }else if(key.equals(EnumKeys.TRANSLATE_TEXT_LANG_CODE.name())){
+                String translateLang = (String) Preferences.getPreference(EnumKeys.TRANSLATE_TEXT_LANG_CODE);
+                updateTranslateLangInDb(translateLang);
+            }
+        };
+
+        preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
     public static void putPreference(EnumKeys key, Object value){
+
         SharedPreferences.Editor e = preferences.edit();
 
         switch (key.getType()){
@@ -99,5 +127,51 @@ public class Preferences {
         }
     }
 
+    public static void updateTextLangInDb(String selectedCode){
+        PreferenceRx.updateTextLanguage(selectedCode)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: e" + e.getMessage());
+                        unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(String name) {
+                        Preferences.putPreference(EnumKeys.ENTER_TEXT_LANG_FULL, name);
+                    }
+                });
+
+    }
+
+    public static void updateTranslateLangInDb(String selectedCode){
+        PreferenceRx.updateTranslateLanguage(selectedCode)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        unsubscribe();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: e" + e.getMessage());
+                        unsubscribe();
+                    }
+
+                    @Override
+                    public void onNext(String name) {
+                        Preferences.putPreference(EnumKeys.TRANSLATE_TEXT_LANG_FULL, name);
+                    }
+                });
+    }
 
 }

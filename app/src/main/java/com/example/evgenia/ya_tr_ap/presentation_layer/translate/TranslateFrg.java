@@ -33,7 +33,6 @@ import static com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils.DIALOG
 /**
  * Created by Evgenia on 02.04.2017.
  */
-// TODO: 14.04.2017 сделать чтою нельзя было выбрать одинаковый язык перевода и набора текста
 public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener, RvEnterTextAdapter.RvEnterTextAdapterListener{
     public final static String TAG = "TranslateFrg";
 
@@ -43,6 +42,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     private CheckBox bookMark;
     private TextView mainTranslate;
     private RelativeLayout layoutTranslate;
+    private TranslatePresenter presenter;
 
 
     public static TranslateFrg newInstance(String title){
@@ -70,6 +70,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        presenter = new TranslatePresenter();
         Log.d(TAG, "onCreate: ");
     }
 
@@ -78,8 +79,6 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_traslate, container, false);
-
-        initTablayout(view);
 
         if(savedInstanceState != null){
             if(getActivity() != null) {
@@ -93,6 +92,8 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
                 }
             }
         }
+
+        initTablayout(view);
         initRecyclerViewText(view);
         initRecyclerViewTranslate(view);
 
@@ -108,21 +109,18 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
             }
         });
 
+        presenter.attachView(this);
+
         return view;
 
     }
 
     private void initRecyclerViewText(View root){
         rvEnterText = (RecyclerView)root.findViewById(R.id.rv_et_text);
-        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
 
 
-        MyLL ll = new MyLL(getContext(), LinearLayoutManager.VERTICAL, false);
+
+        MyLL ll = new MyLL(getContext() );
         ll.setScrollEnabled(false);
         rvEnterText.setLayoutManager(ll);
 
@@ -162,14 +160,14 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
                 int swipedPosition = viewHolder.getAdapterPosition();
                 Log.d(TAG, "onSwiped: " + swipedPosition);
                 RvEnterTextAdapter adapter = (RvEnterTextAdapter)rvEnterText.getAdapter();
-                if(swipeDir == ItemTouchHelper.LEFT ){
+                if(swipeDir == ItemTouchHelper.LEFT && adapter.getItemCount()>0){
                     Log.d(TAG, "onSwiped: left" + swipedPosition);
                     adapter.addItem("");
                     // TODO: 17.04.2017 обновить бд - всавить последнюю запись новую и получить список новый
                     adapter.removeItem(swipedPosition);
-                }else if(swipeDir == ItemTouchHelper.RIGHT){
+                }else if(swipeDir == ItemTouchHelper.RIGHT && adapter.getItemCount()>0){
                     Log.d(TAG, "onSwiped: RIGHT" + swipedPosition);
-                    if(adapter.getItemCount() <= 1) {
+                    if(adapter.getItemCount() <= 1 ) {
                         adapter.addItem(null);
                     }
                     adapter.removeItem(swipedPosition);
@@ -181,7 +179,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     }
 
     private void initRecyclerViewTranslate(View root){
-        rvTranslate = (RecyclerView)root.findViewById(R.id.rv_et_text);
+        rvTranslate = (RecyclerView)root.findViewById(R.id.rv_translate);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(rvTranslate.getContext(), LinearLayoutManager.VERTICAL,false);
         rvTranslate.setLayoutManager(layoutManager);
     }
@@ -192,6 +190,10 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
      * пока из разметки - меньше кода, лучше читается*/
     private void initTablayout(View view){
         tabLayout = (TabLayout) view.findViewById(R.id.tablayout_language);
+
+        String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_FULL);
+        String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_FULL);
+        renameTabs(textLang, translateLang);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -239,10 +241,14 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     private void onSelectArrow(){
         Log.d(TAG, "onSelectArrow: ");
-        /**
-         * обновляет бд языков
-         * посылает запрос на перевод текста (в этом запросе уже и запрос к бд с изменениями табов и запрос на сервер)
-         * как в {@link TranslateFrg#languageSelected()}*/
+        String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
+        String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
+        Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, textLang);
+        Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, translateLang);
+
+        renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
+
+        // TODO: 23.04.2017 запрос на перевод
 
     }
 
@@ -285,6 +291,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
+        presenter.detachView();
 
         super.onDestroy();
     }
@@ -303,13 +310,21 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     public void renameTabs(String text, String translate){
         Log.d(TAG, "renameTabs: ");
-        tabLayout.getTabAt(0).setText(text);
-        tabLayout.getTabAt(2).setText(translate);
+
+        if(text != null && text.length() > 0){
+            tabLayout.getTabAt(0).setText(text);
+        }
+
+        if(translate != null && translate.length() > 0){
+            tabLayout.getTabAt(2).setText(translate);
+        }
+
+
     }
 
 
     @Override
-    public void languageSelected(String language) {
+    public void languageSelected(String code, String lang) {
         Log.d(TAG, "languageSelected: ");
 
         if(getActivity() != null){
@@ -323,53 +338,46 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
 
                 int type = fragment.getArguments().getInt(Utils.KEY_TYPE);
-                changeLanguagePreferences(language, type);
-
+                changeLanguagePreferences(code, lang, type);
 
                 ((SelectLangDialog)fragment).dismiss();
             }
-        }
 
-        // TODO: 17.04.2017 update database
-        /**
-         * одна строка - вызов метода презентера
-         * послать запрос на сервер для перевода
-         * сделать запрос к бд за измененными данными
-         * переименовать табы {@link TranslateFrg#showLanguages(com.example.evgenia.ya_tr_ap.presentation_layer.translate.TranslateModel)}
-         * послать запрос к серверу*/
+        }
 
     }
 
-    private void changeLanguagePreferences(String newLang, int type){
+    private void changeLanguagePreferences(String newLang, String langFull, int type){
 
-        String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG);
-        String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG);
+        String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
+        String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
 
         if(type == SelectLangDialog.TEXT_LANGUAGE && translateLang.equals(newLang)){
 
-            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, textLang);
-            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, newLang);
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, textLang);
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, newLang);
+
+            renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
 
         }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE && textLang.equals(newLang)){
 
-            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, translateLang);
-            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, newLang);
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, translateLang);
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, newLang);
+
+            renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
 
 
         }else if(type == SelectLangDialog.TEXT_LANGUAGE){
 
-            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, newLang);
+            Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, newLang);
+            renameTabs(langFull, "");
 
         }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE){
 
-            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, newLang);
+            Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, newLang);
+            renameTabs("", langFull);
 
         }
-
-        textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG);
-        translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG);
-        // TODO: 17.04.2017 update database
-        renameTabs(textLang, translateLang);
 
     }
 

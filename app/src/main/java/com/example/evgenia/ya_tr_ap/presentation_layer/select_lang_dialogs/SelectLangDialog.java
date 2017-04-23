@@ -19,12 +19,13 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.evgenia.ya_tr_ap.R;
+import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
+import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
 import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.recyclerview.RvDialogAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils.KEY_TYPE;
 import static com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils.KEY_TITLE;
@@ -84,6 +85,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         Log.d(TAG, "onCreate: ");
         presenter = new DialogPresenter();
         presenter.attachView(this);
+
         setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
         super.onCreate(savedInstanceState);
 
@@ -141,7 +143,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
                 LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        adapter = new RvDialogAdapter(new ArrayList<DialogModel>());
+        adapter = new RvDialogAdapter(new ArrayList<Language>());
 
         if(langListener != null){
 
@@ -192,7 +194,8 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     }
 
     @Override
-    public void showItems(List<DialogModel> itemList) {
+    public void showItems(ArrayList<Language> itemList) {
+        Log.d(TAG, "showItems: ");
         if(adapter != null){
             adapter.updateItems(itemList);
         }

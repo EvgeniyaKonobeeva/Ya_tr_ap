@@ -3,10 +3,14 @@ package com.example.evgenia.ya_tr_ap.presentation_layer;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.evgenia.ya_tr_ap.BuildConfig;
 import com.example.evgenia.ya_tr_ap.data_layer.database.SqliteHelper;
+import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
+import com.facebook.stetho.Stetho;
+
+import java.util.Locale;
 
 /**
  * Created by User on 18.04.2017.
@@ -15,15 +19,14 @@ import com.example.evgenia.ya_tr_ap.data_layer.database.SqliteHelper;
 public class MyApp extends Application {
     private static final String TAG = "MyApp";
     private static SqliteHelper dbHelper;
-
+//CBYUKNJY ,HFNM
     public static SQLiteDatabase getDb(){
         SQLiteDatabase db = null;
         try {
             db = dbHelper.getReadableDatabase();
-        }catch (SQLiteException slite){
+            Log.d(TAG, "getDb: getting");
+        }catch (SQLiteException slite) {
             Log.d(TAG, "getDb: " + slite.getMessage());
-        }finally {
-            dbHelper.close();
         }
         return db;
     }
@@ -31,18 +34,32 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate: ");
+
         dbHelper = new SqliteHelper(this);
+
+        Preferences.createPreferences(this);
+
+        if(BuildConfig.DEBUG){
+            Stetho.initializeWithDefaults(this);
+        }
     }
+
+
 
     @Override
     public void onLowMemory() {
+        Log.d(TAG, "onLowMemory: ");
         dbHelper.close();
+        dbHelper = null;
         super.onLowMemory();
     }
 
     @Override
     public void onTerminate() {
+        Log.d(TAG, "onTerminate: ");
         dbHelper.close();
+        dbHelper = null;
         super.onTerminate();
     }
 }

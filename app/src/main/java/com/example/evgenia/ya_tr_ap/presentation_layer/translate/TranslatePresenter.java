@@ -1,7 +1,15 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.translate;
 
 
+import android.util.Log;
+
+import com.example.evgenia.ya_tr_ap.domain_layer.TranslateRx;
 import com.example.evgenia.ya_tr_ap.presentation_layer.Presenter;
+import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.SelectLangDialog;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by User on 11.04.2017.
@@ -9,10 +17,8 @@ import com.example.evgenia.ya_tr_ap.presentation_layer.Presenter;
 
 public class TranslatePresenter extends Presenter<TranslateContract.ITranslateView> implements TranslateContract.ITranslatePresenter {
 
-    @Override
-    public TranslateModel getLanguages() {
-        return null;
-    }
+
+    private static final String TAG = "TranslatePresenter";
 
     @Override
     public TranslateModel translateText() {

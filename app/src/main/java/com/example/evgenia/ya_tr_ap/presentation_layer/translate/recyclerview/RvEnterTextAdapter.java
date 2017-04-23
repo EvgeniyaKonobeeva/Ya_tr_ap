@@ -1,5 +1,6 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.translate.recyclerview;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -82,7 +83,7 @@ public class RvEnterTextAdapter extends RecyclerView.Adapter<RvEnterTextAdapter.
 
             editText = (EditText)v.findViewById(R.id.et_text);
             editText.addTextChangedListener(this);
-            editText.setOnTouchListener(touch);
+//            editText.setOnTouchListener(touch);
 
             rlButtons = (RelativeLayout)v.findViewById(R.id.rl_buttons);
 

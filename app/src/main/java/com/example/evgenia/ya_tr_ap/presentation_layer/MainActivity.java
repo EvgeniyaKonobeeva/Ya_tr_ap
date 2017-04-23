@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         Log.d(TAG, "onStart: ");
-        Preferences.createPreferences(this);
-        Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG, "en");
-        Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG, "ru");
         super.onStart();
     }
 

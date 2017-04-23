@@ -8,11 +8,8 @@ public interface TranslateContract {
 
     interface ITranslatePresenter{
 
-        /**
-         * метод делает запрос к бд к таблицам языков
-         * @return объект класса {@link TranslateModel} с выбранными языками*/
-        TranslateModel getLanguages();
         TranslateModel translateText();
+
 
 
     }

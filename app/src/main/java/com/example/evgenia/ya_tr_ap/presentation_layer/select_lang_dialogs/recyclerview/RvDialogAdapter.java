@@ -1,43 +1,44 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.recyclerview;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.DialogModel;
+import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
+import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
 import com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 /**
  * Created by Evgenia on 09.04.2017.
  */
-// TODO: 12.04.2017 сделать два вьюхолдера с некликабельными ячейками, или настроить заголовки как не кликабельные
 public class RvDialogAdapter extends RecyclerView.Adapter {
 
     private static final int TYPE_LANG = 0;
     private static final int TYPE_HEADER = 1;
+    private Language selectedLanguage;
 
     /**
      * листенер, который вызываем при выборе языка, и передаем ему тот язык, который выбрали*/
     public interface OnSelectLangListener{
-        void languageSelected(String language);
+        void languageSelected(String code, String lang);
     }
 
     private List<Object> itemList;
     private OnSelectLangListener listener;
-    /**
-     * позиция с которой начинается список "все языки" и заканчивается список "недавно использованные"*/
-    private int allLangsPosition = 0;
 
-    public RvDialogAdapter(ArrayList<DialogModel> itemList) {
+    public RvDialogAdapter(ArrayList<Language> itemList) {
         this.itemList = new ArrayList<>();
-        updateListByInsertingHeaders(itemList);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        if(itemList.get(position) instanceof DialogModel){
+        if(itemList.get(position) instanceof Language){
             return TYPE_LANG;
         }else if(itemList.get(position) instanceof String){
             return TYPE_HEADER;
@@ -80,9 +81,8 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
         return itemList.size();
     }
 
-    public void updateItems(List<DialogModel> list){
-        this.itemList.clear();
-        this.itemList.addAll(list);
+    public void updateItems(ArrayList<Language> list){
+        updateListByInsertingHeaders(list);
         notifyDataSetChanged();
     }
     /**
@@ -91,18 +91,38 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
      * отсортируем скписок
      * если какая-то модель встречается два раза, то она есть в списке недавних языков
      * считаем сколько таких "удвоенных можелей и вставляем в список заголовок на нужное место"*/
-    public void updateListByInsertingHeaders(ArrayList<DialogModel> list){
-        ArrayList<DialogModel> nList = new ArrayList<>();
-        nList.addAll(list.subList(0, Utils.NUMBER_RECENT_LANGS));
-        int countRecent = 0;
-        for(DialogModel dm : nList){
-            if(list.contains(dm)) countRecent++;
-        }
+    public void updateListByInsertingHeaders(ArrayList<Language> list){
+        // помечаем самый недавний язык как выбранный
+        selectedLanguage = Collections.max(list);
+        selectedLanguage.setSelected(true);
 
+        itemList.clear();
         itemList.addAll(list);
-        itemList.add(countRecent, "Все языки");
-        if(countRecent > 0){
+
+
+
+        // сортируем по убыванию
+        Collections.sort(list);
+        Collections.reverse(list);
+
+        int countRecentPos = 0;
+
+        if(list.size() > Utils.NUMBER_RECENT_LANGS){
+            List<Language> resentLangs = new ArrayList<>();
+            resentLangs.addAll(list.subList(0, Utils.NUMBER_RECENT_LANGS));
+            for(int i = Utils.NUMBER_RECENT_LANGS-1; i >=0 ; i--){
+                if(resentLangs.get(i).getSynkTime() > 0){
+                    resentLangs.get(i).setRecent(true);
+                    itemList.add(0,resentLangs.get(i));
+                    countRecentPos++;
+                }
+            }
+        }
+        if(countRecentPos > 0){
             itemList.add(0, "Недавние языки");
+            itemList.add(countRecentPos+1, "Все языки");
+        }else {
+            itemList.add(0, "Все языки");
         }
     }
 
@@ -115,44 +135,48 @@ public class RvDialogAdapter extends RecyclerView.Adapter {
 //    ============= HOLDER ==========
 
     public class VHLangs extends RecyclerView.ViewHolder{
+        private static final String TAG = "VHLangs";
         TextView text;
         View marker;
+        RelativeLayout relativeLayout;
+
         public VHLangs(final View itemView) {
             super(itemView);
             text = (TextView)itemView.findViewById(R.id.tv_language);
             marker = itemView.findViewById(R.id.iv_checkmark);
+            relativeLayout = (RelativeLayout)itemView.findViewById(R.id.rl_layout);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
-                    DialogModel dialogModel = (DialogModel) itemList.get(position);
+                    Language dialogModel = (Language) itemList.get(position);
 
                     if (listener != null) {
-                        listener.languageSelected(dialogModel.getLanguageCode());
+                        listener.languageSelected(dialogModel.getCode(),dialogModel.getLanguage());
                     }
-
-
-
-                    /**
-                     * ИЗМЕНЕНИЯ В БД ЧЕРЕЗ ПРЕЗЕНТЕР
-                     * при изменении выбранного языка в одной таблице, убедиться, что язык в другой таблице не одинаков
-                     * иначе - сменить язык другого диалога
-                     * УНИЧТОЖИТЬ ДИАЛОГ
-                     * отправка сигнала к листенеру, где оттуда - ЗАПРОС К БД, и к серверу*/
                 }
             });
         }
 
         public void onBind(int position){
+            Log.d(TAG, "onBind: ");
 
-            DialogModel mod = (DialogModel)itemList.get(position);
+            Language mod = (Language)itemList.get(position);
             text.setText(mod.getLanguage());
             if(mod.isSelected()){
-                marker.setVisibility(View.VISIBLE);
-            }else
+                if(!mod.isRecent() || (mod.isRecent() && position > Utils.NUMBER_RECENT_LANGS)){
+                    marker.setVisibility(View.VISIBLE);
+                    relativeLayout.setBackgroundColor(relativeLayout.getContext().getResources().getColor(R.color.background2));
+                }else {
+                    marker.setVisibility(View.GONE);
+                    relativeLayout.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                }
+            }else {
                 marker.setVisibility(View.GONE);
+                relativeLayout.setBackgroundColor(Color.argb(0, 0, 0, 0));
+            }
 
 
         }
