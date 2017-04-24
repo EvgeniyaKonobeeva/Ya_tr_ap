@@ -8,7 +8,6 @@ import android.util.Log;
 import com.example.evgenia.ya_tr_ap.BuildConfig;
 import com.example.evgenia.ya_tr_ap.data_layer.database.SqliteHelper;
 import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
-import com.facebook.stetho.Stetho;
 
 import java.util.Locale;
 
@@ -40,9 +39,6 @@ public class MyApp extends Application {
 
         Preferences.createPreferences(this);
 
-        if(BuildConfig.DEBUG){
-            Stetho.initializeWithDefaults(this);
-        }
     }
 
 
