@@ -3,6 +3,7 @@
     package="com.example.evgenia.ya_tr_ap">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application android:name=".presentation_layer.MyApp"
         android:allowBackup="true"

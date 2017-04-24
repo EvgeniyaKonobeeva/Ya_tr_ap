@@ -5,27 +5,29 @@ package com.example.evgenia.ya_tr_ap.presentation_layer.hisroty;
  */
 
 public class HistoryFavorModel {
-    private String lang;
     private String text;
-    private String translateMain;
-    private boolean isMarked;
-    private String historyTranslate;
+    private String translate;
+    private String dictionary;
+    private String lang;
+    private int history;
+    private int favorites;
 
-    public HistoryFavorModel(String lang, String text, String translateMain, boolean isMarked, String historyTranslate) {
-        this.lang = lang;
+
+    public HistoryFavorModel(String text, String translate, String dictionary, String lang, int history, int favorites) {
         this.text = text;
-        this.translateMain = translateMain;
-        this.isMarked = isMarked;
-        this.historyTranslate = historyTranslate;
-    }
-
-
-    public String getLang() {
-        return lang;
-    }
-
-    public void setLang(String lang) {
+        this.translate = translate;
+        this.dictionary = dictionary;
         this.lang = lang;
+        this.history = history;
+        this.favorites = favorites;
+    }
+
+    public HistoryFavorModel(String text, String translate, String lang, int history, int favorites) {
+        this.text = text;
+        this.translate = translate;
+        this.lang = lang;
+        this.history = history;
+        this.favorites = favorites;
     }
 
     public String getText() {
@@ -36,27 +38,43 @@ public class HistoryFavorModel {
         this.text = text;
     }
 
-    public String getTranslateMain() {
-        return translateMain;
+    public String getTranslate() {
+        return translate;
     }
 
-    public void setTranslateMain(String translateMain) {
-        this.translateMain = translateMain;
+    public void setTranslate(String translate) {
+        this.translate = translate;
     }
 
-    public boolean isMarked() {
-        return isMarked;
+    public String getDictionary() {
+        return dictionary;
     }
 
-    public void setMarked(boolean marked) {
-        isMarked = marked;
+    public void setDictionary(String dictionary) {
+        this.dictionary = dictionary;
     }
 
-    public String getHistoryTranslate() {
-        return historyTranslate;
+    public String getLang() {
+        return lang;
     }
 
-    public void setHistoryTranslate(String historyTranslate) {
-        this.historyTranslate = historyTranslate;
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    public int getHistory() {
+        return history;
+    }
+
+    public void setHistory(int history) {
+        this.history = history;
+    }
+
+    public int getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(int favorites) {
+        this.favorites = favorites;
     }
 }

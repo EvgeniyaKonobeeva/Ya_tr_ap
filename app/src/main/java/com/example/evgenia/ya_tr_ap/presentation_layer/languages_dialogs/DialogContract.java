@@ -1,9 +1,8 @@
-package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs;
+package com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs;
 
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Evgenia on 09.04.2017.
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface DialogContract {
     interface IDialogPresenter{
-        void loadLanguages(@SelectLangDialog.DialogType int dtype);
+        void loadLanguages(@LanguagesDialog.DialogType int dtype);
         void updateLanguagesDb();
     }
 

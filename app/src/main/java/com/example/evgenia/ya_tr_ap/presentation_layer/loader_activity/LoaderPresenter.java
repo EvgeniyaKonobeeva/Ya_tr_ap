@@ -1,15 +1,19 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.loader_activity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import com.example.evgenia.ya_tr_ap.data_layer.Data;
-import com.example.evgenia.ya_tr_ap.domain_layer.SelectLangsRx;
+import com.example.evgenia.ya_tr_ap.domain_layer.languages.LanguagesRx;
 import com.example.evgenia.ya_tr_ap.presentation_layer.Presenter;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -24,7 +28,11 @@ public class LoaderPresenter extends Presenter <LoaderContract.ILoaderView> impl
 
     @Override
     public void loadLanguagesToDb() {
-        SelectLangsRx.getSupportedLanguagesFromNet()
+
+
+
+        LanguagesRx.getSupportedLanguagesFromNet()
+                .delaySubscription(2, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<ArrayList<Language>>() {
                     @Override
@@ -37,7 +45,6 @@ public class LoaderPresenter extends Presenter <LoaderContract.ILoaderView> impl
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "onError: Throwable=" + e.getMessage());
-                        Log.d(TAG, "onError: thread my " + Thread.currentThread().getName());
                         onLoadFinished();
                         unsubscribe();
                     }
@@ -60,5 +67,16 @@ public class LoaderPresenter extends Presenter <LoaderContract.ILoaderView> impl
                 getView().openMainActivity();
             }
         });
+    }
+
+    public boolean hasConnection(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo network = cm.getActiveNetworkInfo();
+
+        if (network != null && network.isConnected()) {
+            return true;
+        }else return false;
     }
 }

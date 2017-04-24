@@ -5,7 +5,9 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.example.evgenia.ya_tr_ap.data_layer.languages.TableLanguages;
+
+import com.example.evgenia.ya_tr_ap.data_layer.tables.history.TableHistory;
+import com.example.evgenia.ya_tr_ap.data_layer.tables.languages.TableLanguages;
 
 
 /**
@@ -39,11 +41,28 @@ public class SqliteHelper extends SQLiteOpenHelper {
                     TableLanguages.SYNC_TIME_TRANSLATE + " BLOB "
                     + " );";
 
+    private String createHistoryTable =
+            "CREATE TABLE IF NOT EXISTS " + TableHistory.tableName + "" +
+                    "( " +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                    TableHistory.SYNC_TIME + " BLOB ," +
+                    TableHistory.TEXT + " TEXT ," +
+                    TableHistory.TRANSLATE + " TEXT ," +
+                    TableHistory.DICTIONARY + " TEXT ," +
+                    TableHistory.LANG + " TEXT, " +
+                    TableHistory.HISTORY + " INTEGER, " +
+                    TableHistory.FAVOR + " INTEGER, " +
+                    " UNIQUE ( " + TableHistory.TEXT +
+                    ", " + TableHistory.LANG +
+                    ", "+TableHistory.TRANSLATE + ") ON CONFLICT REPLACE "
+                    + " );";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "onCreate: ");
 
         db.execSQL(createLangsTable);
+        db.execSQL(createHistoryTable);
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.example.evgenia.ya_tr_ap.domain_layer.PreferenceRx;
-import com.example.evgenia.ya_tr_ap.domain_layer.TranslateRx;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,7 +28,8 @@ public class Preferences{
         ENTER_TEXT_LANG_CODE(TYPE_STRING),
         TRANSLATE_TEXT_LANG_CODE(TYPE_STRING),
         ENTER_TEXT_LANG_FULL(TYPE_STRING),
-        TRANSLATE_TEXT_LANG_FULL(TYPE_STRING);
+        TRANSLATE_TEXT_LANG_FULL(TYPE_STRING),
+        FIRST_LAUNCH(TYPE_BOOLEAN);
 
 
 

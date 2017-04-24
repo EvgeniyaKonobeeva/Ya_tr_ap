@@ -168,15 +168,13 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
     }
 
     private void setStrings(){
-        if(getArguments() != null){
+        if(getArguments() != null && getActivity()!= null){
             if(getArguments().getInt(Utils.KEY_TYPE) == HISTORY){
                 etSearch.setHint(getActivity().getString(R.string.find_in_history));
                 tvEmptyList.setText(getActivity().getString(R.string.no_translate_in_history));
-                // TODO: 15.04.2017 оменять иконкку
             }else {
                 etSearch.setHint(getActivity().getString(R.string.find_in_favors));
                 tvEmptyList.setText(getActivity().getString(R.string.no_translate_in_favors));
-                // TODO: 15.04.2017 оменять иконкку
             }
         }
 
@@ -200,34 +198,6 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
 
 
 
-//    настроить recyclerView (дивайдеры, адаптеры, нажатие на пункт, отметка закладки--- листенер на закладку,
-//                                                                                            и листенер на остальную часть )
-//
-//        сдлеать поиск по списку
-//
-//
-//
-//    настроить работу etSearch ( почему-то постоянно в фокусе, клава поднимается вместе с табо нижним???? )
-//        настроить нажатия на дроваблы слева и справа
-
-
-//    @Override
-//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onViewCreated: ");
-//    }
-//
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onActivityCreated: ");
-//        super.onActivityCreated(savedInstanceState);
-//    }
-//
-//    @Override
-//    public void onStart() {
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onStart: ");
-//        super.onStart();
-//    }
 
     @Override
     public void onResume() {
@@ -243,25 +213,6 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
 
     }
 
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onPause: ");
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onStop: ");
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        Log.d(TAG + getArguments().getInt(Utils.KEY_TYPE), "onDestroy: ");
-//        presenter.detachView();
-//        super.onDestroy();
-//    }
-
     @Override
     public void showItems(ArrayList<HistoryFavorModel> list) {
         if (recyclerView.getAdapter() instanceof RVHistoryFavorAdapter){
@@ -274,12 +225,11 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
 
     @Override
     public void onClearItems() {
-        // TODO: 15.04.2017 обновить бд показать диалог
         if(presenter != null){
             if( getArguments().getInt(Utils.KEY_TYPE) == HISTORY){
-                presenter.updateBdHistory();
+                presenter.clearHistory();
             }else {
-                presenter.updateBdFavorites();
+                presenter.clearFavor();
             }
         }
 
@@ -320,5 +270,13 @@ public class HistoryFavoritesFrg extends Fragment implements HistoryFavorContrac
     @Override
     public void onItemClicked() {
 
+    }
+
+
+    @Override
+    public void onFavorChanged(HistoryFavorModel model) {
+        if(presenter != null){
+            presenter.updateBdFavorites(model);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs;
+package com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -19,9 +19,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.recyclerview.RvDialogAdapter;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.recyclerview.RvDialogAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,7 +33,7 @@ import static com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils.KEY_TI
  * Created by Evgenia on 09.04.2017.
  */
 
-public class SelectLangDialog extends DialogFragment implements View.OnClickListener, DialogContract.IDialogView{
+public class LanguagesDialog extends DialogFragment implements View.OnClickListener, DialogContract.IDialogView{
 
     /**
      * определим тип для вида диалогов - диалог с языками перевода, или с языками введенного текста
@@ -45,7 +44,7 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
     public @interface DialogType{}
     public static final int TEXT_LANGUAGE = 0;
     public static final int TRANSLATE_LANGUAGE = 1;
-    public static @SelectLangDialog.DialogType int getType(int t){
+    public static @LanguagesDialog.DialogType int getType(int t){
         switch (t){
             case TEXT_LANGUAGE:
                 return TEXT_LANGUAGE;
@@ -56,20 +55,20 @@ public class SelectLangDialog extends DialogFragment implements View.OnClickList
         }
     }
 
-    private static final String TAG = "SelectLangDialog";
+    private static final String TAG = "LanguagesDialog";
 
     private RvDialogAdapter.OnSelectLangListener langListener;
     private DialogPresenter presenter;
     private RecyclerView recyclerView;
     private RvDialogAdapter adapter;
 
-    public static SelectLangDialog newInstance(String title, @DialogType int type1){
+    public static LanguagesDialog newInstance(String title, @DialogType int type1){
         Log.d(TAG, "newInstance: ");
         Bundle bundle = new Bundle();
         bundle.putString(KEY_TITLE, title);
         bundle.putInt(KEY_TYPE, type1);
 
-        SelectLangDialog dialog = new SelectLangDialog();
+        LanguagesDialog dialog = new LanguagesDialog();
         dialog.setArguments(bundle);
 
         return dialog;

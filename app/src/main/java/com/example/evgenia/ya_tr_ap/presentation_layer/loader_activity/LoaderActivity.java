@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.evgenia.ya_tr_ap.R;
 import com.example.evgenia.ya_tr_ap.presentation_layer.MainActivity;
@@ -18,12 +22,28 @@ public class LoaderActivity extends AppCompatActivity implements LoaderContract.
 
     private static final String TAG = "LoaderActivity";
     private LoaderPresenter presenter;
+    private LinearLayout errorLayout;
+    private TextView repeat;
+    private ProgressBar progressBar;
+    private boolean isFirst;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loader);
         presenter = new LoaderPresenter();
+
+         errorLayout = (LinearLayout)findViewById(R.id.error_layout);
+         repeat = (TextView)findViewById(R.id.error_repeat);
+        repeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryToStart();
+            }
+        });
+         progressBar = (ProgressBar)findViewById(R.id.progress);
+
+
         Log.d(TAG, "onCreate: ");
     }
 
@@ -32,10 +52,28 @@ public class LoaderActivity extends AppCompatActivity implements LoaderContract.
         Log.d(TAG, "onStart: ");
 
         presenter.attachView(this);
-        presenter.loadLanguagesToDb();
+        tryToStart();
+
 
 
         super.onStart();
+    }
+
+    private void tryToStart(){
+        isFirst = (boolean)Preferences.getPreference(Preferences.EnumKeys.FIRST_LAUNCH);
+        if(!isFirst) {
+            Log.d(TAG, "tryToStart: first="+isFirst);
+            if (presenter.hasConnection(this)) {
+                errorLayout.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                presenter.loadLanguagesToDb();
+            } else {
+                progressBar.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.VISIBLE);
+            }
+        }else {
+            presenter.loadLanguagesToDb();
+        }
     }
 
 
@@ -55,6 +93,8 @@ public class LoaderActivity extends AppCompatActivity implements LoaderContract.
     @Override
     public void openMainActivity() {
         Log.d(TAG, "openMainActivity: ");
+        if(!isFirst)
+            Preferences.putPreference(Preferences.EnumKeys.FIRST_LAUNCH, true);
         setUpSelectedLangs();
 
         Intent mainActivity = new Intent(this, MainActivity.class);

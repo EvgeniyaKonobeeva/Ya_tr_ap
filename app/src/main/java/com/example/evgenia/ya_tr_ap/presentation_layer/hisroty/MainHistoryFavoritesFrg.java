@@ -33,15 +33,6 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
     private ArrayList<Fragment> fragments;
     private ImageButton btnClear;
 
-    public static MainHistoryFavoritesFrg newInstance(String title){
-        Bundle bundle = new Bundle();
-        bundle.putString(Utils.KEY_TITLE, title);
-
-        MainHistoryFavoritesFrg mainHistoryFavoritesFrg = new MainHistoryFavoritesFrg();
-        mainHistoryFavoritesFrg.setArguments(bundle);
-
-        return mainHistoryFavoritesFrg;
-    }
 
     public static MainHistoryFavoritesFrg newInstance(int iconRes){
         Bundle bundle = new Bundle();
@@ -68,9 +59,6 @@ public class MainHistoryFavoritesFrg extends Fragment implements ViewPager.OnPag
         View view = inflater.inflate(R.layout.fragment_main_history, container, false);
         initViewPager(view);
         initTabLayout(view);
-
-
-
 
         return view;
 

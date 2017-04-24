@@ -1,59 +1,61 @@
 package com.example.evgenia.ya_tr_ap.presentation_layer.translate;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.SelectLangDialog;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.recyclerview.RvDialogAdapter;
+import com.example.evgenia.ya_tr_ap.data_layer.retrofit.dicitionary.Def;
+import com.example.evgenia.ya_tr_ap.presentation_layer.hisroty.HistoryFavorModel;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.LanguagesDialog;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.recyclerview.RvDialogAdapter;
 import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
-import com.example.evgenia.ya_tr_ap.presentation_layer.translate.recyclerview.MyLL;
-import com.example.evgenia.ya_tr_ap.presentation_layer.translate.recyclerview.RvEnterTextAdapter;
+import com.example.evgenia.ya_tr_ap.presentation_layer.translate.recyclerview.RvDictionaryAdapter;
 import com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.SelectLangDialog.TEXT_LANGUAGE;
+import static com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.LanguagesDialog.TEXT_LANGUAGE;
 import static com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils.DIALOG_TAG;
 
 /**
  * Created by Evgenia on 02.04.2017.
  */
-public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener, RvEnterTextAdapter.RvEnterTextAdapterListener{
+public class TranslateFrg extends Fragment implements TranslateContract.ITranslateView, RvDialogAdapter.OnSelectLangListener{
     public final static String TAG = "TranslateFrg";
+    public final static String ERR_DIALOG_TAG = "err_dialog_tag";
+    public final static String SAVE_TRANSLATE = "save_traslate";
 
     private TabLayout tabLayout;
-    private RecyclerView rvEnterText;
     private RecyclerView rvTranslate;
     private CheckBox bookMark;
     private TextView mainTranslate;
     private RelativeLayout layoutTranslate;
     private TranslatePresenter presenter;
-
-
-    public static TranslateFrg newInstance(String title){
-        Bundle bundle = new Bundle();
-        bundle.putString(Utils.KEY_TITLE, title);
-
-        TranslateFrg translateFrg = new TranslateFrg();
-        translateFrg.setArguments(bundle);
-
-        return translateFrg;
-    }
+    private EditText editText;
+    private RelativeLayout rlButtons;
+    private ImageView ivClear;
+    private ImageView ivTranslate;
 
     public static TranslateFrg newInstance(int iconRes){
         Bundle bundle = new Bundle();
@@ -79,22 +81,25 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         View view = inflater.inflate(R.layout.fragment_traslate, container, false);
+        String translate = "";
 
         if(savedInstanceState != null){
             if(getActivity() != null) {
                 Log.d(TAG, "onCreateView: not null");
 
                 Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
-                if(fragment != null && fragment instanceof SelectLangDialog){
+                if(fragment != null && fragment instanceof LanguagesDialog){
                     Log.d(TAG, "find: dialog");
-                    ((SelectLangDialog)fragment).setLangListener(this);
+                    ((LanguagesDialog)fragment).setLangListener(this);
 
                 }
+
+                translate = savedInstanceState.getString(SAVE_TRANSLATE);
             }
         }
 
         initTablayout(view);
-        initRecyclerViewText(view);
+        initEnterText(view);
         initRecyclerViewTranslate(view);
 
         mainTranslate = (TextView)view.findViewById(R.id.tv_main_translate);
@@ -105,89 +110,84 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
         bookMark.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // TODO: 17.04.2017 обновить бд на измненение, обновляем модель ?
+                if(presenter != null && editText.getText().length()>0){
+                    String translateFrom = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
+                    String translateTo = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
+                    presenter.addToFavor(new HistoryFavorModel(editText.getText().toString(),
+                            mainTranslate.getText().toString(),
+                            translateFrom+ "-" + translateTo,
+                            1, isChecked == true?1:0));
+                }
             }
         });
 
         presenter.attachView(this);
 
+        if(translate != null && translate.length()>0){
+            editText.setText(translate);
+            onClickTranslate(translate);
+        }
+
         return view;
 
     }
 
-    private void initRecyclerViewText(View root){
-        rvEnterText = (RecyclerView)root.findViewById(R.id.rv_et_text);
-
-
-
-        MyLL ll = new MyLL(getContext() );
-        ll.setScrollEnabled(false);
-        rvEnterText.setLayoutManager(ll);
-
-        ArrayList<String> arr = new ArrayList<String>();
-        for(int i = 0; i < 20; i++){
-            arr.add("string " + i);
-        }
-        RvEnterTextAdapter adapter = new RvEnterTextAdapter(arr, this);
-        rvEnterText.setAdapter(adapter);
-
-        initItemTouchHelper();
-
-
-    }
-
-    private void initItemTouchHelper(){
-
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
-
-            private static final String TAG = ".SimpleCallback";
-
-
-
+    private void initEnterText(View root){
+        editText = (EditText)root.findViewById(R.id.et_text);
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
-//            @Override
-//            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-//                int position = viewHolder.getAdapterPosition();
-//                return super.getSwipeDirs(recyclerView, viewHolder);
-//            }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-
-                int swipedPosition = viewHolder.getAdapterPosition();
-                Log.d(TAG, "onSwiped: " + swipedPosition);
-                RvEnterTextAdapter adapter = (RvEnterTextAdapter)rvEnterText.getAdapter();
-                if(swipeDir == ItemTouchHelper.LEFT && adapter.getItemCount()>0){
-                    Log.d(TAG, "onSwiped: left" + swipedPosition);
-                    adapter.addItem("");
-                    // TODO: 17.04.2017 обновить бд - всавить последнюю запись новую и получить список новый
-                    adapter.removeItem(swipedPosition);
-                }else if(swipeDir == ItemTouchHelper.RIGHT && adapter.getItemCount()>0){
-                    Log.d(TAG, "onSwiped: RIGHT" + swipedPosition);
-                    if(adapter.getItemCount() <= 1 ) {
-                        adapter.addItem(null);
-                    }
-                    adapter.removeItem(swipedPosition);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 0){
+                    rlButtons.setVisibility(View.VISIBLE);
+                }else {
+                    rlButtons.setVisibility(View.GONE);
                 }
             }
-        };
-        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        mItemTouchHelper.attachToRecyclerView(rvEnterText);
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        rlButtons = (RelativeLayout)root.findViewById(R.id.rl_buttons);
+
+        ivClear = (ImageView)root.findViewById(R.id.iv_clear);
+        ivClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editText.setText("");
+                mainTranslate.setText("");
+                ((RvDictionaryAdapter)rvTranslate.getAdapter()).updateList(new ArrayList<>());
+            }
+        });
+
+        ivTranslate = (ImageView)root.findViewById(R.id.iv_translate);
+        ivTranslate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickTranslate(editText.getText().toString());
+            }
+        });
+
+
     }
 
     private void initRecyclerViewTranslate(View root){
         rvTranslate = (RecyclerView)root.findViewById(R.id.rv_translate);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(rvTranslate.getContext(), LinearLayoutManager.VERTICAL,false);
         rvTranslate.setLayoutManager(layoutManager);
+
+        rvTranslate.setAdapter(new RvDictionaryAdapter(new ArrayList<Def>()));
+
+
     }
 
-
-    /**
-     * сетитть табы из разметки или из кода?
-     * пока из разметки - меньше кода, лучше читается*/
     private void initTablayout(View view){
         tabLayout = (TabLayout) view.findViewById(R.id.tablayout_language);
 
@@ -221,7 +221,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
         if (tabPos == 0){
 
-            SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.text_language),
+            LanguagesDialog dialog = LanguagesDialog.newInstance(getString(R.string.text_language),
                     TEXT_LANGUAGE);
             dialog.setLangListener(this);
 
@@ -229,14 +229,16 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
         }else if (tabPos == 2){
 
-            SelectLangDialog dialog = SelectLangDialog.newInstance(getString(R.string.tarnslate_language),
-                    SelectLangDialog.TRANSLATE_LANGUAGE);
+            LanguagesDialog dialog = LanguagesDialog.newInstance(getString(R.string.tarnslate_language),
+                    LanguagesDialog.TRANSLATE_LANGUAGE);
             dialog.setLangListener(this);
 
             dialog.show(getActivity().getSupportFragmentManager(), DIALOG_TAG);
         }else {
             onSelectArrow();
         }
+
+
     }
 
     private void onSelectArrow(){
@@ -247,8 +249,6 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
         Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, translateLang);
 
         renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
-
-        // TODO: 23.04.2017 запрос на перевод
 
     }
 
@@ -292,6 +292,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
         presenter.detachView();
+        presenter = null;
 
         super.onDestroy();
     }
@@ -299,13 +300,11 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
+        if(editText.getText().length()>0)
+            outState.putString(SAVE_TRANSLATE , editText.getText().toString());
+
         super.onSaveInstanceState(outState);
 
-    }
-
-    @Override
-    public void showLanguages(TranslateModel translateModel) {
-        Log.d(TAG, "showLanguages: ");
     }
 
     public void renameTabs(String text, String translate){
@@ -319,6 +318,12 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
             tabLayout.getTabAt(2).setText(translate);
         }
 
+        if(this.isResumed()){
+
+            if(editText != null) {
+                onClickTranslate(editText.getText().toString());
+            }
+        }
 
     }
 
@@ -332,7 +337,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
             Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
 
 
-            if(fragment != null && fragment instanceof SelectLangDialog
+            if(fragment != null && fragment instanceof LanguagesDialog
                     && fragment.getArguments()!= null && fragment.isVisible()){
 
 
@@ -340,7 +345,7 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
                 int type = fragment.getArguments().getInt(Utils.KEY_TYPE);
                 changeLanguagePreferences(code, lang, type);
 
-                ((SelectLangDialog)fragment).dismiss();
+                ((LanguagesDialog)fragment).dismiss();
             }
 
         }
@@ -352,14 +357,14 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
         String textLang = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
         String translateLang = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
 
-        if(type == SelectLangDialog.TEXT_LANGUAGE && translateLang.equals(newLang)){
+        if(type == LanguagesDialog.TEXT_LANGUAGE && translateLang.equals(newLang)){
 
             Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, textLang);
             Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, newLang);
 
             renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
 
-        }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE && textLang.equals(newLang)){
+        }else if(type == LanguagesDialog.TRANSLATE_LANGUAGE && textLang.equals(newLang)){
 
             Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, translateLang);
             Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, newLang);
@@ -367,12 +372,12 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
             renameTabs(tabLayout.getTabAt(2).getText().toString(), tabLayout.getTabAt(0).getText().toString());
 
 
-        }else if(type == SelectLangDialog.TEXT_LANGUAGE){
+        }else if(type == LanguagesDialog.TEXT_LANGUAGE){
 
             Preferences.putPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE, newLang);
             renameTabs(langFull, "");
 
-        }else if(type == SelectLangDialog.TRANSLATE_LANGUAGE){
+        }else if(type == LanguagesDialog.TRANSLATE_LANGUAGE){
 
             Preferences.putPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE, newLang);
             renameTabs("", langFull);
@@ -381,11 +386,77 @@ public class TranslateFrg extends Fragment implements TranslateContract.ITransla
 
     }
 
+    @Override
+    public void showMainTranslate(List<String> list) {
+        if(list.size() == 1){
+            mainTranslate.setText(list.get(0));
+        }else {
+            for(int i = 0 ; i < list.size()-1; i++){
+                mainTranslate.append(list.get(i) + ", ");
+            }
+            mainTranslate.append(list.get(list.size()-1));
+        }
 
-
+        if(presenter != null){
+            String translateFrom = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
+            String translateTo = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
+            presenter.addToHistory(new HistoryFavorModel(editText.getText().toString(),
+                    mainTranslate.getText().toString(),
+                    translateFrom + "-"+ translateTo,
+                    1,0));
+        }
+    }
 
     @Override
+    public void showDictionary(List<Def> list) {
+        ((RvDictionaryAdapter)rvTranslate.getAdapter()).updateList(list);
+    }
+
+    @Override
+    public void showErrorDialog(String msg, String title) {
+        if(getActivity() != null){
+
+
+            Fragment prev = getActivity().getSupportFragmentManager().findFragmentByTag(ERR_DIALOG_TAG);
+            if (prev == null) {
+                Log.d(TAG, "showErrorDialog: prev == null");
+                DialogFragment errDialog = ErrorDialog.newInstance(msg, title);
+                errDialog.setCancelable(false);
+
+                InputMethodManager imm =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mainTranslate.getWindowToken(), 0);
+                mainTranslate.clearFocus();
+
+                errDialog.show(getActivity().getSupportFragmentManager(), ERR_DIALOG_TAG);
+
+            }else if(!prev.isVisible()){
+                Log.d(TAG, "showErrorDialog: isVisible" +prev.isVisible());
+            }else {
+                Log.d(TAG, "showErrorDialog: prev not null");
+            }
+
+
+
+        }else Log.d(TAG, "showErrorDialog: activity is null");
+
+    }
+
     public void onClickTranslate(String textToTranslate) {
         Log.d(TAG, "onClickTranslate: ");
+
+        if(presenter != null && textToTranslate.length()>0 ){
+            if(presenter.hasConnection(getContext())){
+                String translateFrom = (String) Preferences.getPreference(Preferences.EnumKeys.ENTER_TEXT_LANG_CODE);
+                String translateTo = (String) Preferences.getPreference(Preferences.EnumKeys.TRANSLATE_TEXT_LANG_CODE);
+                presenter.translateText(textToTranslate, translateFrom, translateTo);
+            }else {
+                showErrorDialog(getString(R.string.error_network), getString(R.string.error_network_title));
+            }
+
+        }else {
+            mainTranslate.setText("");
+            ((RvDictionaryAdapter)rvTranslate.getAdapter()).updateList(new ArrayList<>());
+            Log.d(TAG, "onClickTranslate: presenter is null");
+        }
     }
 }

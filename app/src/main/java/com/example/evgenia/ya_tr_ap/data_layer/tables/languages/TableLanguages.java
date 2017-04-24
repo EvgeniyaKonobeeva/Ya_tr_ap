@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.data_layer.languages;
+package com.example.evgenia.ya_tr_ap.data_layer.tables.languages;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,18 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.StringDef;
 import android.util.Log;
 
-import com.example.evgenia.ya_tr_ap.domain_layer.LanguagesMapping;
+import com.example.evgenia.ya_tr_ap.domain_layer.languages.LanguagesMapping;
 import com.example.evgenia.ya_tr_ap.presentation_layer.MyApp;
-import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
-import com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 
 /**
@@ -41,12 +36,13 @@ public class TableLanguages implements ITableLanguages{
 
     public Cursor getAllTextLangs(){
         db = MyApp.getDb();
-        String query = "select " + FULL_NAME + ", " + CODE + " , " + SYNC_TIME_TEXT + " as " + TIME
-                + " from " + tableName
-                + " order by " + FULL_NAME
-                + ";" ;
+        StringBuffer query = new StringBuffer();
+        query.append("select ").append(FULL_NAME).append(", ").append(CODE).append(" , ")
+                .append(SYNC_TIME_TEXT).append(" as ").append(TIME)
+                .append(" from ").append(tableName)
+                .append(" order by ").append(FULL_NAME).append(";");
         if(db != null) {
-            return db.rawQuery(query, null);
+            return db.rawQuery(query.toString(), null);
         }else return  null;
     }
 
@@ -103,7 +99,9 @@ public class TableLanguages implements ITableLanguages{
 
     public String updateSelectedTranslateLangs(String selected){
         db = MyApp.getDb();
+
         selected = selected.toLowerCase();
+
         String updateQuery = " update " + tableName
                 + " set " + SYNC_TIME_TRANSLATE + " = " + System.currentTimeMillis()
                 + " where " + CODE + " like '" + selected + "' ;";
@@ -147,11 +145,13 @@ public class TableLanguages implements ITableLanguages{
         if(db != null){
             Cursor selectCursor = db.rawQuery(selectQuery, null);
             langInTable = LanguagesMapping.getLangsFromCursor(selectCursor);
+            selectCursor.close();
         }
 
-        for(Language lang : langs){
-            if(langInTable.contains(lang)){
-                langs.remove(lang);
+        for(int i = 0; i < langs.size(); i++){
+            if(langInTable.contains(langs.get(i))){
+                langs.remove(langs.get(i));
+                i--;
             }
         }
 

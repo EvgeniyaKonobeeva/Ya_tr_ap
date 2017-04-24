@@ -1,6 +1,6 @@
 package com.example.evgenia.ya_tr_ap.data_layer.retrofit.langs_deserializer;
 
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,7 +24,7 @@ public class LanguageDeserializer implements JsonDeserializer<ArrayList<Language
             Set<Map.Entry<String, JsonElement>> entries = json.getAsJsonObject().entrySet();
 
             for(Map.Entry<String, JsonElement> entry : entries){
-                list.add(new Language(entry.getKey(), entry.getValue().getAsString()));
+                list.add(new Language(entry.getKey().toLowerCase(), entry.getValue().getAsString().toLowerCase()));
             }
         }
 

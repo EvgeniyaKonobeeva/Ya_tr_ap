@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!--таб - переключение между языками-->
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tablayout_language"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        app:tabMode="fixed"
+        app:tabGravity="center"
+        android:background="@color/colorPrimary"
+        app:tabIndicatorColor="#00000000">
+        <android.support.design.widget.TabItem
+            android:id="@+id/lang1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="lang 1"
+            android:tag="t1"/>
+        <android.support.design.widget.TabItem
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:icon="@mipmap/resizehorizontal_48"
+            android:tag="t2"/>
+        <android.support.design.widget.TabItem
+            android:id="@+id/lang2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="lang 2"
+            android:tag="t3"/>
+    </android.support.design.widget.TabLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!--ввод текста -->
+        <RelativeLayout
+            android:id="@+id/rv_et_text"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/translate_et_height"
+            android:background="@color/background"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1">
+            <EditText
+                android:id="@+id/et_text"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:hint="@string/enter_text"
+                android:gravity="top|left"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:minLines="10"
+                android:maxWidth="@dimen/translate_et_height"
+                android:maxHeight="150dp"
+                android:background="@android:color/transparent"
+                android:focusable="true"
+                android:padding="5dp"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/rl_buttons" />
+
+
+            <RelativeLayout
+                android:id="@+id/rl_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true">
+
+                <ImageView
+                    android:id="@+id/iv_clear"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentLeft="true"
+                    android:src="@mipmap/delete_48"
+                    android:scaleType="centerInside"/>
+
+                <ImageView
+                    android:id="@+id/iv_translate"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:src="@mipmap/language_48"
+                    android:scaleType="centerInside"/>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rl_translate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ScrollView
+                android:id="@+id/scroll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="16dp"
+                android:layout_toLeftOf="@+id/chb_mark">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <!-- основной перевод -->
+                    <TextView
+                        android:id="@+id/tv_main_translate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </ScrollView>
+
+
+            <!--варианты перевода-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_translate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/scroll"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <!--добавить  в закладки-->
+            <CheckBox
+                android:id="@+id/chb_mark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:button="@drawable/bookmark_selector" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

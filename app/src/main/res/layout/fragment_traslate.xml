@@ -37,7 +37,7 @@
 
 
     <!--ввод текста -->
-    <android.support.v7.widget.RecyclerView
+    <RelativeLayout
         android:id="@+id/rv_et_text"
         android:layout_width="match_parent"
         android:layout_height="@dimen/translate_et_height"
@@ -45,8 +45,50 @@
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp">
-    </android.support.v7.widget.RecyclerView>
+        <EditText
+            android:id="@+id/et_text"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:hint="@string/enter_text"
+            android:gravity="top|left"
+            android:scrollbars="vertical"
+            android:scrollHorizontally="false"
+            android:minLines="10"
+            android:maxWidth="@dimen/translate_et_height"
+            android:maxHeight="150dp"
+            android:background="@android:color/transparent"
+            android:layout_above="@+id/rl_buttons"
+            android:layout_alignParentTop="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="5dp"/>
 
+
+        <RelativeLayout
+            android:id="@+id/rl_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true">
+
+            <ImageView
+                android:id="@+id/iv_clear"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentLeft="true"
+                android:src="@mipmap/delete_48"
+                android:scaleType="centerInside"/>
+
+            <ImageView
+                android:id="@+id/iv_translate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/language_48"
+                android:scaleType="centerInside"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
 
 
     <RelativeLayout
@@ -54,26 +96,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- основной перевод -->
-        <TextView
-            android:id="@+id/tv_main_translate"
-            android:layout_width="match_parent"
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="translate" />
+            android:layout_alignParentLeft="true"
+            android:layout_margin="16dp"
+            android:layout_toLeftOf="@+id/chb_mark">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <!-- основной перевод -->
+                <TextView
+                    android:id="@+id/tv_main_translate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
+            </FrameLayout>
+        </ScrollView>
+
 
         <!--варианты перевода-->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_translate"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/tv_main_translate"
+            android:layout_below="@+id/scroll"
             android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_toLeftOf="@+id/chb_mark"
-            android:background="@color/colorAccent">
+            android:layout_marginRight="16dp">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -83,10 +136,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/tv_main_translate"
             android:layout_marginBottom="16dp"
-            android:button="@drawable/bookmark_selector"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:button="@drawable/bookmark_selector" />
     </RelativeLayout>
 
 

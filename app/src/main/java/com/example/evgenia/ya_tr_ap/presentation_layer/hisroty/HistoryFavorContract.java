@@ -8,18 +8,26 @@ import java.util.ArrayList;
 
 public interface HistoryFavorContract {
     interface IHistoryFavorPresenter{
-        /**
-         * запрос по истории
-         * запрос по закладкам */
 
-        void updateBdHistory();
-        void updateBdFavorites();
+
+        void updateBdHistory(HistoryFavorModel model);
+
+        void updateBdFavorites(HistoryFavorModel model);
+
         void downLoadAllHistory();
+
         void downLoadFavorites();
+        void clearFavor();
+        void clearHistory();
+        void addToHistory(HistoryFavorModel model);
+
+
 
     }
 
     interface IHistoryFavorView{
+
         void showItems(ArrayList<HistoryFavorModel> list);
+
     }
 }

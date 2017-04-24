@@ -3,8 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="text_language">языка текста</string>
-    <string name="tarnslate_language">языка перевода</string>
+    <string name="text_language">язык текста</string>
+    <string name="tarnslate_language">язык перевода</string>
     <string name="recently_used">НЕДАВНО ИСПОЛЬЗОВАННЫЕ</string>
     <string name="all_languages">ВСЕ ЯЗЫКИ</string>
     <string name="history_title">История</string>
@@ -15,4 +15,9 @@
     <string name="no_translate_in_history">Нет переводов в истории</string>
     <string name="not_found">ничего не найдено</string>
     <string name="enter_text">Введите текст</string>
+    <string name="error_network">Проверте подключение к Интернету и повторите попытку</string>
+    <string name="error_network_title">Ошибка соединения</string>
+    <string name="error_network_repeat">Повторить</string>
+
+    <string name="error_network_start">Невозможно загрузить поддерживаемые языки. Проверте подключение к Интернету и попробуйте снова</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models;
+package com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.recyclerview;
+package com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.recyclerview;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.evgenia.ya_tr_ap.R;
-import com.example.evgenia.ya_tr_ap.presentation_layer.preferences.Preferences;
-import com.example.evgenia.ya_tr_ap.presentation_layer.select_lang_dialogs.models.Language;
+import com.example.evgenia.ya_tr_ap.presentation_layer.languages_dialogs.models.Language;
 import com.example.evgenia.ya_tr_ap.presentation_layer.utils.Utils;
 
 import java.util.ArrayList;

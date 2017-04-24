@@ -28,6 +28,7 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
     public interface OnRecyclerViewListener{
         void onListUpdated(int listSize);
         void onItemClicked();
+        void onFavorChanged(HistoryFavorModel model);
     }
 
     private static final String TAG = "RVHistoryAdapter";
@@ -102,8 +103,11 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
             mark.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    list.get(getAdapterPosition()).setMarked(mark.isChecked());
-                    // TODO: 15.04.2017 бновить запись в бд
+                    list.get(getAdapterPosition()).setFavorites(mark.isChecked()==true?1:0);
+                    if(listener != null){
+                        listener.onFavorChanged(list.get(getAdapterPosition()));
+                    }
+
                 }
             });
 
@@ -113,9 +117,9 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
 
         public void onBindModel(HistoryFavorModel model){
             text.setText(model.getText());
-            translate.setText(model.getTranslateMain());
+            translate.setText(model.getTranslate());
             langs.setText(model.getLang());
-            mark.setChecked(model.isMarked());
+            mark.setChecked(model.getFavorites()==1);
         }
 
         @Override
@@ -125,7 +129,7 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
                     if(listener != null){
                         listener.onItemClicked();
                     }
-                    Toast.makeText(v.getContext(), "translate", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(v.getContext(), "translate", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -164,7 +168,7 @@ public class RVHistoryFavorAdapter extends RecyclerView.Adapter<RVHistoryFavorAd
 
                 for (HistoryFavorModel model  : displayedList) {
                     String text = model.getText().toLowerCase().trim();
-                    String translate = model.getTranslateMain().toLowerCase().trim();
+                    String translate = model.getTranslate().toLowerCase().trim();
 
                     if (text.contains(filterPattern) || translate.contains(filterPattern)) {
                         filteredList.add(model);
